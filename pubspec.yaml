@@ -1,0 +1,68 @@
+name: hub_aura
+description: "Auralix Hub — Professional API Developer Portal"
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.5.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # Navigation
+  go_router: ^14.6.2
+
+  # State Management
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.3.5
+
+  # Networking
+  dio: ^5.7.0
+  web_socket_channel: ^3.0.1
+  cookie_jar: ^4.0.8
+  dio_cookie_manager: ^3.1.1
+
+  # Storage
+  shared_preferences: ^2.3.3
+
+  # UI & Animations
+  flutter_animate: ^4.5.0
+  google_fonts: ^6.2.1
+  flutter_highlight: ^0.7.0
+  highlight: ^0.7.0
+  url_strategy: ^0.2.0
+
+  # Utilities
+  intl: ^0.20.2
+  uuid: ^4.5.1
+  timeago: ^3.7.0
+  url_launcher: ^6.3.1
+  http: ^1.2.2
+  image_picker: ^1.1.2
+  file_picker: ^8.1.4
+  crypto: ^3.0.6
+  equatable: ^2.0.7
+  json_annotation: ^4.9.0
+  flutter_svg: ^2.0.10+1
+  cupertino_icons: ^1.0.8
+  gap: ^3.0.1
+  visibility_detector: ^0.4.0+2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+  build_runner: ^2.4.13
+  riverpod_generator: ^2.4.3
+  json_serializable: ^6.8.0
+
+flutter:
+  generate: true
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/icons/

@@ -1,0 +1,7 @@
+{
+    "@@locale": "es",
+    "appTitle": "Auralix Hub",
+    "@appTitle": {
+        "description": "El título de la aplicación"
+    }
+}
