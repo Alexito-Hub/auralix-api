@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hub_aura/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../../core/theme/theme_extension.dart';
 import '../../../core/network/api_client.dart';
@@ -41,11 +42,30 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
     return double.tryParse('${value ?? ''}') ?? 0;
   }
 
-  String _planUseCase(int credits) {
-    if (credits < 0) return 'Ideal para equipos con uso intensivo diario.';
-    if (credits <= 100) return 'Ideal para pruebas y proyectos personales.';
-    if (credits <= 500) return 'Ideal para side-projects y equipos pequeÃ±os.';
-    return 'Ideal para producciÃ³n y cargas frecuentes.';
+  String _resolvePlanName(AppLocalizations l10n, Map<String, dynamic> plan) {
+    final nameKey = plan['nameKey']?.toString();
+    if (nameKey == 'billingPlanRequestsName') {
+      return l10n.billingPlanRequestsName(_planCredits(plan));
+    }
+    if (nameKey == 'billingPlanWeeklyUnlimited') {
+      return l10n.billingPlanWeeklyUnlimited;
+    }
+    return plan['name']?.toString() ?? l10n.billingPlanRequestsName(0);
+  }
+
+  String? _resolvePlanBadge(AppLocalizations l10n, Map<String, dynamic> plan) {
+    final badgeKey = plan['badgeKey']?.toString();
+    if (badgeKey == 'billingPopularBadge') return l10n.billingPopularBadge;
+    final badge = plan['badge']?.toString();
+    if (badge == null || badge.trim().isEmpty) return null;
+    return badge;
+  }
+
+  String _planUseCase(int credits, AppLocalizations l10n) {
+    if (credits < 0) return l10n.billingPlanUseCaseIntensive;
+    if (credits <= 100) return l10n.billingPlanUseCasePersonal;
+    if (credits <= 500) return l10n.billingPlanUseCaseSmallTeams;
+    return l10n.billingPlanUseCaseProduction;
   }
 
   String _money(double amount) => amount.toStringAsFixed(2);
@@ -80,14 +100,23 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
     });
   }
 
+  Future<void> _refreshPlans() async {
+    ref.invalidate(billingPlansProvider);
+    try {
+      await ref.read(billingPlansProvider.future);
+    } catch (_) {
+      // Keep current UI state; error is shown by plans.when.
+    }
+  }
+
   Future<void> _purchase() async {
+    final l10n = AppLocalizations.of(context)!;
     final customCredits = _customCredits;
     final useCustom = customCredits != null;
     final selectedPlanId = useCustom ? null : _selected;
 
     if (!useCustom && selectedPlanId == null) {
-      setState(() => _purchaseError =
-          'Selecciona un paquete o ingresa crÃ©ditos personalizados');
+      setState(() => _purchaseError = l10n.billingSelectPackageError);
       return;
     }
 
@@ -108,20 +137,20 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
           _paymentUrl = url;
           _purchasing = false;
           if (url == null || url.trim().isEmpty) {
-            _purchaseError = 'Pago iniciado, pero no se recibiÃ³ URL de pago';
+            _purchaseError = l10n.billingNoPaymentUrlError;
           }
         });
       } else {
         setState(() {
           _purchasing = false;
           _purchaseError =
-              res.data['msg']?.toString() ?? 'No se pudo generar el pago';
+              res.data['msg']?.toString() ?? l10n.billingGeneratePaymentError;
         });
       }
     } catch (_) {
       setState(() {
         _purchasing = false;
-        _purchaseError = 'Error de conexiÃ³n al generar el pago';
+        _purchaseError = l10n.billingConnectionPaymentError;
       });
     }
   }
@@ -129,6 +158,7 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
   @override
   Widget build(BuildContext context) {
     final ext = AuralixThemeExtension.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final user = ref.watch(authProvider).valueOrNull;
     final plans = ref.watch(billingPlansProvider);
     final hPadding = context.pageHorizontalPadding;
@@ -165,22 +195,26 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
           Center(
             child: ConstrainedBox(
               constraints: BoxConstraints(maxWidth: maxWidth),
-              child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(hPadding, 20, hPadding, 48),
-                child: TerminalPageReveal(
-                  animationKey: 'billing-main',
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+              child: RefreshIndicator(
+                color: ext.primary,
+                onRefresh: _refreshPlans,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: EdgeInsets.fromLTRB(hPadding, 20, hPadding, 48),
+                  child: TerminalPageReveal(
+                    animationKey: 'billing-main',
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                       TerminalPageHeader(
-                        title: 'billing // marketplace',
-                        subtitle:
-                            'Adquiere y gestiona tus crÃ©ditos de Hub.Aura',
+                        title: l10n.billingTitle,
+                        subtitle: l10n.billingSubtitle,
                         actions: [
                           if (user != null)
                             StatusBadge(
                                 code: 200,
-                                message: 'plan: ${user.plan.toUpperCase()}'),
+                                message:
+                                    '${l10n.appShellPlanLabel.toLowerCase()}: ${user.plan.toUpperCase()}'),
                         ],
                       ),
                       const SizedBox(height: 24),
@@ -210,7 +244,7 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
                                     size: 18, color: ext.primary),
                                 const SizedBox(width: 8),
                                 Text(
-                                  'COMPRA DE CRÃ‰DITOS TRANSPARENTE',
+                                  l10n.billingTransparentPurchaseTitle,
                                   style: TextStyle(
                                       color: ext.text,
                                       fontSize: 13,
@@ -221,7 +255,7 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Conoce el coste exacto por crÃ©dito y obtÃ©n estimaciones precisas para que elijas libremente entre paquetes o cantidades a medida. Sin compromisos ocultos.',
+                              l10n.billingTransparentPurchaseDescription,
                               style: TextStyle(
                                   color: ext.textMuted,
                                   fontSize: 12,
@@ -248,7 +282,7 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Text('BALANCE EN LÃNEA',
+                                            Text(l10n.billingOnlineBalance,
                                                 style: TextStyle(
                                                     color: ext.textMuted,
                                                     fontSize: 11,
@@ -257,7 +291,8 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
                                                         FontWeight.bold)),
                                             const SizedBox(height: 4),
                                             Text(
-                                                '${user?.credits ?? 0} solicitudes disponibles',
+                                              l10n.billingAvailableRequests(
+                                                user?.credits ?? 0),
                                                 style: TextStyle(
                                                     color: ext.success,
                                                     fontSize: 16,
@@ -281,7 +316,8 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
                                             color: ext.primary
                                                 .withValues(alpha: 0.3))),
                                     child: Text(
-                                        (user?.plan ?? 'FREE').toUpperCase(),
+                                      (user?.plan ?? l10n.dashboardFreeTier)
+                                        .toUpperCase(),
                                         style: TextStyle(
                                             color: ext.primary,
                                             fontSize: 12,
@@ -315,15 +351,15 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text('BALANCE EN LÃNEA',
+                                      Text(l10n.billingOnlineBalance,
                                           style: TextStyle(
                                               color: ext.textMuted,
                                               fontSize: 11,
                                               fontFamily: 'JetBrainsMono',
                                               fontWeight: FontWeight.bold)),
                                       const SizedBox(height: 4),
-                                      Text(
-                                          '${user?.credits ?? 0} SOLICITUDES DISPONIBLES',
+                                      Text(l10n.billingAvailableRequests(
+                                        user?.credits ?? 0),
                                           style: TextStyle(
                                               color: ext.text,
                                               fontSize: 18,
@@ -343,7 +379,10 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
                                             color: ext.primary
                                                 .withValues(alpha: 0.3))),
                                     child: Text(
-                                        'TIPO DE PLAN: ${(user?.plan ?? 'FREE').toUpperCase()}',
+                                        l10n.billingPlanTypeLabel(
+                                        (user?.plan ??
+                                            l10n.dashboardFreeTier)
+                                          .toUpperCase()),
                                         style: TextStyle(
                                             color: ext.primary,
                                             fontSize: 12,
@@ -360,7 +399,7 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
                           Icon(Icons.layers_outlined,
                               size: 16, color: ext.textMuted),
                           const SizedBox(width: 8),
-                          Text('PAQUETES ESTANDARIZADOS',
+                          Text(l10n.billingStandardPackages,
                               style: TextStyle(
                                   color: ext.text,
                                   fontSize: 14,
@@ -372,14 +411,13 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
                       const SizedBox(height: 16),
 
                       plans.when(
-                        loading: () => SizedBox(
-                            height: 120,
-                            child: Center(
-                                child: CircularProgressIndicator(
-                                    color: ext.primary))),
+                        loading: () => _BillingPlansSkeleton(
+                          ext: ext,
+                          columns: gridColumns,
+                        ),
                         error: (_, __) => Padding(
                             padding: const EdgeInsets.all(20),
-                            child: Text('No pudimos recuperar los planes',
+                          child: Text(l10n.billingPlansLoadError,
                                 style: TextStyle(color: ext.error))),
                         data: (list) {
                           String? bestValueId;
@@ -409,9 +447,11 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
                               final credits = _planCredits(plan);
                               return _PlanCard(
                                 plan: plan,
+                                planName: _resolvePlanName(l10n, plan),
+                                badgeText: _resolvePlanBadge(l10n, plan),
                                 selected: _selected == plan['id'],
                                 bestValue: bestValueId == '${plan['id']}',
-                                helperText: _planUseCase(credits),
+                                helperText: _planUseCase(credits, l10n),
                                 unitPrice: credits > 0
                                     ? _money(_planPrice(plan) / credits)
                                     : null,
@@ -438,7 +478,7 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
                         children: [
                           Icon(Icons.tune, size: 16, color: ext.textMuted),
                           const SizedBox(width: 8),
-                          Text('VOLUMEN A MEDIDA',
+                          Text(l10n.billingCustomVolume,
                               style: TextStyle(
                                   color: ext.text,
                                   fontSize: 14,
@@ -494,7 +534,7 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
                                           ? ext.primary
                                           : ext.textMuted),
                                   const SizedBox(width: 10),
-                                  Text('CANTIDAD PERSONALIZADA',
+                                    Text(l10n.billingCustomAmount,
                                       style: TextStyle(
                                           color: _showCustom
                                               ? ext.primary
@@ -508,7 +548,7 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
                                 const SizedBox(height: 20),
                                 TerminalInput(
                                   controller: _customCtrl,
-                                  hint: 'Ej: 750',
+                                  hint: l10n.billingCustomHintExample,
                                   prefix: 'credits:',
                                   keyboardType: TextInputType.number,
                                   onSubmitted: (_) => _purchase(),
@@ -530,7 +570,9 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
                                             size: 14, color: ext.textMuted),
                                         const SizedBox(width: 8),
                                         Text(
-                                            'EstimaciÃ³n en crudo: â‰ˆ \$${(n * 0.015).toStringAsFixed(2)} USD',
+                                          l10n.billingRawEstimate(
+                                            (n * 0.015)
+                                              .toStringAsFixed(2)),
                                             style: TextStyle(
                                                 color: ext.textMuted,
                                                 fontSize: 12,
@@ -563,7 +605,7 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
                                         Icon(Icons.shield_outlined,
                                             color: ext.success, size: 20),
                                         const SizedBox(width: 10),
-                                        Text('PASARELA ACTIVA // CRYPTOMUS',
+                                      Text(l10n.billingActiveGatewayTitle,
                                             style: TextStyle(
                                                 color: ext.success,
                                                 fontWeight: FontWeight.bold,
@@ -571,7 +613,7 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
                                       ],
                                     ),
                                     const SizedBox(height: 16),
-                                    Text('URL GENERADA Y CIFRADA:',
+                                    Text(l10n.billingGeneratedEncryptedUrl,
                                         style: TextStyle(
                                             color: ext.textMuted,
                                             fontSize: 11,
@@ -605,9 +647,9 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
                                       child: ElevatedButton.icon(
                                         icon: const Icon(Icons.open_in_new,
                                             size: 16),
-                                        label: const Text(
-                                            'REDIRECCIONAR A PAGO',
-                                            style: TextStyle(
+                                        label: Text(
+                                          l10n.billingRedirectToPayment,
+                                            style: const TextStyle(
                                                 fontFamily: 'JetBrainsMono',
                                                 fontWeight: FontWeight.bold,
                                                 letterSpacing: 0.5)),
@@ -655,8 +697,9 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
                                                 size: 18),
                                         label: Text(
                                             _purchasing
-                                                ? 'GENERANDO ORDEN...'
-                                                : 'PROCESAR PAGO CRIPTOGRÃFICO',
+                                            ? l10n.billingGeneratingOrder
+                                            : l10n
+                                              .billingProcessCryptoPayment,
                                             style: const TextStyle(
                                                 fontFamily: 'JetBrainsMono',
                                                 fontWeight: FontWeight.bold,
@@ -717,7 +760,7 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
                       const SizedBox(height: 24),
                       Center(
                         child: Text(
-                          'Transacciones aseguradas vÃ­a Cryptomus. Comisiones ultrabajas. Sin almacenamiento de TDC.',
+                          l10n.billingSecureTransactionsFooter,
                           style: TextStyle(
                               color: ext.textSubtle,
                               fontSize: 11,
@@ -736,13 +779,45 @@ class _BillingScreenState extends ConsumerState<BillingScreen> {
                             .animate(onPlay: (c) => c.repeat(reverse: true))
                             .fade(duration: 800.ms, begin: 0.3, end: 1.0),
                       ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _BillingPlansSkeleton extends StatelessWidget {
+  final AuralixThemeExtension ext;
+  final int columns;
+
+  const _BillingPlansSkeleton({required this.ext, required this.columns});
+
+  @override
+  Widget build(BuildContext context) {
+    return GridView.count(
+      crossAxisCount: columns,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      crossAxisSpacing: 16,
+      mainAxisSpacing: 16,
+      childAspectRatio: context.isMobile ? 1.25 : (context.isTablet ? 1.1 : 1.25),
+      children: List.generate(
+        columns * 2,
+        (index) => Container(
+          decoration: BoxDecoration(
+            color: ext.surface,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: ext.border),
+          ),
+        )
+            .animate(onPlay: (c) => c.repeat(reverse: true))
+            .fade(begin: 0.45, end: 1, duration: (700 + (index * 60)).ms),
       ),
     );
   }

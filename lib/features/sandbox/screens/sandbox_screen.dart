@@ -283,6 +283,14 @@ class _SandboxScreenState extends ConsumerState<SandboxScreen> {
     return raw;
   }
 
+  Iterable<String> _findUnresolvedPathTokens(String path) sync* {
+    final matcher = RegExp(r'\{([^}/]+)\}|:([A-Za-z0-9_]+)');
+    for (final match in matcher.allMatches(path)) {
+      final token = (match.group(1) ?? match.group(2) ?? '').trim();
+      if (token.isNotEmpty) yield token;
+    }
+  }
+
   void _bootstrapFromService(ApiServiceMetadata service) {
     if (_bootstrappedFromCatalog) return;
     _bootstrappedFromCatalog = true;
@@ -468,6 +476,14 @@ class _SandboxScreenState extends ConsumerState<SandboxScreen> {
 
         body[parameter.name] = _parseTypedValue(rawValue, parameter.type);
       }
+    }
+
+    final unresolvedPathParams = _findUnresolvedPathTokens(requestPath).toSet();
+    if (unresolvedPathParams.isNotEmpty) {
+      for (final name in unresolvedPathParams) {
+        _addEntry(ConsoleEntry.error(l10n.sandboxMissingRequired(name)));
+      }
+      return;
     }
 
     if (query.isNotEmpty) {

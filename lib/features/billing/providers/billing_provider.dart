@@ -23,45 +23,52 @@ final billingPlansProvider =
 const billingDefaultPlans = [
   {
     'id': 'p50',
-    'name': '50 solicitudes',
+    'name': '50 requests',
+    'nameKey': 'billingPlanRequestsName',
     'credits': 50,
     'price': 1.50,
     'currency': 'USD'
   },
   {
     'id': 'p100',
-    'name': '100 solicitudes',
+    'name': '100 requests',
+    'nameKey': 'billingPlanRequestsName',
     'credits': 100,
     'price': 2.50,
     'currency': 'USD'
   },
   {
     'id': 'p250',
-    'name': '250 solicitudes',
+    'name': '250 requests',
+    'nameKey': 'billingPlanRequestsName',
     'credits': 250,
     'price': 5.00,
     'currency': 'USD'
   },
   {
     'id': 'p500',
-    'name': '500 solicitudes',
+    'name': '500 requests',
+    'nameKey': 'billingPlanRequestsName',
     'credits': 500,
     'price': 9.00,
     'currency': 'USD'
   },
   {
     'id': 'p1000',
-    'name': '1000 solicitudes',
+    'name': '1000 requests',
+    'nameKey': 'billingPlanRequestsName',
     'credits': 1000,
     'price': 15.00,
     'currency': 'USD'
   },
   {
     'id': 'weekly',
-    'name': 'Semanal ilimitado',
+    'name': 'Weekly unlimited',
+    'nameKey': 'billingPlanWeeklyUnlimited',
     'credits': -1,
     'price': 20.00,
     'currency': 'USD',
-    'badge': 'Popular'
+    'badge': 'Popular',
+    'badgeKey': 'billingPopularBadge'
   },
 ];

@@ -174,9 +174,10 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   // Table / list
                   Expanded(
                     child: _loading
-                        ? Center(
-                            child:
-                                CircularProgressIndicator(color: ext.primary))
+                      ? _HistoryLoadingSkeleton(
+                        ext: ext,
+                        compact: isCompact,
+                        )
                         : _error != null
                             ? Center(
                                 child: Text(_resolvedError(l10n),
@@ -234,89 +235,94 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
     }
 
     if (compact) {
-      return ListView.separated(
-        itemCount: rows.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 8),
-        itemBuilder: (_, i) {
-          final l = rows[i];
-          final code = _asInt(l['statusCode']) ?? 200;
-          final responseMs = _asInt(l['responseTimeMs']) ?? 0;
-          final deducted = _asInt(l['creditsDeducted']) ?? 0;
-          final color = code >= 500
-              ? ext.error
-              : code >= 400
-                  ? ext.warning
-                  : ext.success;
-          return GlowCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Text(l['method'] ?? 'GET',
-                        style: TextStyle(
-                            color: ext.primary,
-                            fontSize: 12,
-                            fontFamily: 'JetBrainsMono',
-                            fontWeight: FontWeight.bold)),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                          color: color.withValues(alpha: 0.15),
-                          borderRadius: BorderRadius.circular(3)),
-                      child: Text('$code',
+      return RefreshIndicator(
+        color: ext.primary,
+        onRefresh: () => _fetch(page: 1),
+        child: ListView.separated(
+          physics: const AlwaysScrollableScrollPhysics(),
+          itemCount: rows.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 8),
+          itemBuilder: (_, i) {
+            final l = rows[i];
+            final code = _asInt(l['statusCode']) ?? 200;
+            final responseMs = _asInt(l['responseTimeMs']) ?? 0;
+            final deducted = _asInt(l['creditsDeducted']) ?? 0;
+            final color = code >= 500
+                ? ext.error
+                : code >= 400
+                    ? ext.warning
+                    : ext.success;
+            return GlowCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Text(l['method'] ?? 'GET',
                           style: TextStyle(
-                              color: color,
+                              color: ext.primary,
+                              fontSize: 12,
+                              fontFamily: 'JetBrainsMono',
+                              fontWeight: FontWeight.bold)),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
+                        decoration: BoxDecoration(
+                            color: color.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(3)),
+                        child: Text('$code',
+                            style: TextStyle(
+                                color: color,
+                                fontSize: 11,
+                                fontFamily: 'JetBrainsMono')),
+                      ),
+                      const Spacer(),
+                      Text('${responseMs}ms',
+                          style: TextStyle(
+                              color: ext.textMuted,
                               fontSize: 11,
                               fontFamily: 'JetBrainsMono')),
-                    ),
-                    const Spacer(),
-                    Text('${responseMs}ms',
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(l['endpoint'] ?? '/',
+                      style: TextStyle(
+                          color: ext.text,
+                          fontSize: 12,
+                          fontFamily: 'JetBrainsMono'),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis),
+                  const SizedBox(height: 6),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 6,
+                    children: [
+                      Text(
+                        l10n.historyCredit(
+                          deducted == 0 ? '-' : '-$deducted',
+                        ),
                         style: TextStyle(
-                            color: ext.textMuted,
+                            color: deducted == 0 ? ext.textMuted : ext.warning,
                             fontSize: 11,
-                            fontFamily: 'JetBrainsMono')),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(l['endpoint'] ?? '/',
-                    style: TextStyle(
-                        color: ext.text,
-                        fontSize: 12,
-                        fontFamily: 'JetBrainsMono'),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis),
-                const SizedBox(height: 6),
-                Wrap(
-                  spacing: 10,
-                  runSpacing: 6,
-                  children: [
-                    Text(
-                      l10n.historyCredit(
-                        deducted == 0 ? '-' : '-$deducted',
+                            fontFamily: 'JetBrainsMono'),
                       ),
-                      style: TextStyle(
-                          color: deducted == 0 ? ext.textMuted : ext.warning,
-                          fontSize: 11,
-                          fontFamily: 'JetBrainsMono'),
-                    ),
-                    Text(
-                      l['isSandbox'] == true
-                          ? l10n.historyEnvironmentSandbox
-                          : l10n.historyEnvironmentProduction,
-                      style: TextStyle(
-                          color: ext.textSubtle,
-                          fontSize: 11,
-                          fontFamily: 'JetBrainsMono'),
-                    ),
-                  ],
-                ),
-              ],
-            ).animate().fadeIn(duration: 180.ms),
-          );
-        },
+                      Text(
+                        l['isSandbox'] == true
+                            ? l10n.historyEnvironmentSandbox
+                            : l10n.historyEnvironmentProduction,
+                        style: TextStyle(
+                            color: ext.textSubtle,
+                            fontSize: 11,
+                            fontFamily: 'JetBrainsMono'),
+                      ),
+                    ],
+                  ),
+                ],
+              ).animate().fadeIn(duration: 180.ms),
+            );
+          },
+        ),
       );
     }
 
@@ -341,74 +347,80 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
           ),
           // Data rows
           Expanded(
-            child: ListView.separated(
+            child: RefreshIndicator(
+              color: ext.primary,
+              onRefresh: () => _fetch(page: 1),
+              child: ListView.separated(
+              physics: const AlwaysScrollableScrollPhysics(),
               itemCount: rows.length,
               separatorBuilder: (_, __) =>
-                  Divider(color: ext.border, height: 1),
+                Divider(color: ext.border, height: 1),
               itemBuilder: (_, i) {
                 final l = rows[i];
                 final code = _asInt(l['statusCode']) ?? 200;
                 final responseMs = _asInt(l['responseTimeMs']) ?? 0;
                 final deducted = _asInt(l['creditsDeducted']) ?? 0;
                 final color = code >= 500
-                    ? ext.error
-                    : code >= 400
-                        ? ext.warning
-                        : ext.success;
+                  ? ext.error
+                  : code >= 400
+                    ? ext.warning
+                    : ext.success;
                 return Padding(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  child: Row(children: [
-                    SizedBox(
-                        width: 70,
-                        child: Text(l['method'] ?? 'GET',
-                            style: TextStyle(
-                                color: ext.primary,
-                                fontSize: 12,
-                                fontFamily: 'JetBrainsMono',
-                                fontWeight: FontWeight.bold))),
-                    SizedBox(
-                        width: 60,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(
-                              color: color.withValues(alpha: 0.15),
-                              borderRadius: BorderRadius.circular(3)),
-                          child: Text('$code',
-                              style: TextStyle(
-                                  color: color,
-                                  fontSize: 11,
-                                  fontFamily: 'JetBrainsMono'),
-                              textAlign: TextAlign.center),
-                        )),
-                    Expanded(
-                        child: Text(l['endpoint'] ?? '/',
-                            style: TextStyle(
-                                color: ext.text,
-                                fontSize: 12,
-                                fontFamily: 'JetBrainsMono'),
-                            overflow: TextOverflow.ellipsis)),
-                    SizedBox(
-                        width: 80,
-                        child: Text('${responseMs}ms',
-                            style: TextStyle(
-                                color: ext.textMuted,
-                                fontSize: 11,
-                                fontFamily: 'JetBrainsMono'),
-                            textAlign: TextAlign.end)),
-                    SizedBox(
-                        width: 80,
-                        child: Text(deducted == 0 ? '-' : '-$deducted',
-                            style: TextStyle(
-                                color:
-                                    deducted == 0 ? ext.textMuted : ext.warning,
-                                fontSize: 11,
-                                fontFamily: 'JetBrainsMono'),
-                            textAlign: TextAlign.end)),
-                  ]),
+                padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Row(children: [
+                  SizedBox(
+                    width: 70,
+                    child: Text(l['method'] ?? 'GET',
+                      style: TextStyle(
+                        color: ext.primary,
+                        fontSize: 12,
+                        fontFamily: 'JetBrainsMono',
+                        fontWeight: FontWeight.bold))),
+                  SizedBox(
+                    width: 60,
+                    child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(3)),
+                    child: Text('$code',
+                      style: TextStyle(
+                        color: color,
+                        fontSize: 11,
+                        fontFamily: 'JetBrainsMono'),
+                      textAlign: TextAlign.center),
+                    )),
+                  Expanded(
+                    child: Text(l['endpoint'] ?? '/',
+                      style: TextStyle(
+                        color: ext.text,
+                        fontSize: 12,
+                        fontFamily: 'JetBrainsMono'),
+                      overflow: TextOverflow.ellipsis)),
+                  SizedBox(
+                    width: 80,
+                    child: Text('${responseMs}ms',
+                      style: TextStyle(
+                        color: ext.textMuted,
+                        fontSize: 11,
+                        fontFamily: 'JetBrainsMono'),
+                      textAlign: TextAlign.end)),
+                  SizedBox(
+                    width: 80,
+                    child: Text(deducted == 0 ? '-' : '-$deducted',
+                      style: TextStyle(
+                        color: deducted == 0
+                          ? ext.textMuted
+                          : ext.warning,
+                        fontSize: 11,
+                        fontFamily: 'JetBrainsMono'),
+                      textAlign: TextAlign.end)),
+                ]),
                 );
               },
+              ),
             ),
           ),
         ],
@@ -433,5 +445,51 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                 fontFamily: 'JetBrainsMono',
                 fontWeight: FontWeight.bold)));
     return width == null ? Expanded(child: w) : w;
+  }
+}
+
+class _HistoryLoadingSkeleton extends StatelessWidget {
+  final AuralixThemeExtension ext;
+  final bool compact;
+
+  const _HistoryLoadingSkeleton({required this.ext, required this.compact});
+
+  @override
+  Widget build(BuildContext context) {
+    if (compact) {
+      return ListView.separated(
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: 6,
+        separatorBuilder: (_, __) => const SizedBox(height: 8),
+        itemBuilder: (_, i) => Container(
+          height: 94,
+          decoration: BoxDecoration(
+            color: ext.surface,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: ext.border),
+          ),
+        )
+            .animate(onPlay: (c) => c.repeat(reverse: true))
+            .fade(begin: 0.45, end: 1, duration: (650 + (i * 60)).ms),
+      );
+    }
+
+    return GlowCard(
+      padding: const EdgeInsets.all(12),
+      child: ListView.separated(
+        physics: const AlwaysScrollableScrollPhysics(),
+        itemCount: 8,
+        separatorBuilder: (_, __) => Divider(color: ext.border, height: 1),
+        itemBuilder: (_, i) => Container(
+          height: 32,
+          decoration: BoxDecoration(
+            color: ext.surfaceVariant.withValues(alpha: 0.35),
+            borderRadius: BorderRadius.circular(4),
+          ),
+        )
+            .animate(onPlay: (c) => c.repeat(reverse: true))
+            .fade(begin: 0.4, end: 1, duration: (620 + (i * 40)).ms),
+      ),
+    );
   }
 }

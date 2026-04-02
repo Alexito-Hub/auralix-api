@@ -30,11 +30,21 @@ class ApiClient {
   }
 
   static String buildAbsoluteUrl(String endpoint) {
-    final normalized = endpoint.startsWith('/') ? endpoint : '/$endpoint';
-    return '${baseUri.toString().replaceAll(RegExp(r'/+$'), '')}$normalized';
+    final base = baseUri.toString().replaceAll(RegExp(r'/+$'), '');
+    final raw = endpoint.trim();
+    if (raw.isEmpty) return '$base/';
+
+    final parsed = Uri.tryParse(raw);
+    final pathCandidate =
+        parsed != null && parsed.hasScheme ? parsed.path : raw;
+    final normalizedPath =
+        '/${pathCandidate.replaceFirst(RegExp(r'^/+'), '')}';
+    return '$base$normalizedPath';
   }
 
   final CookieJar _cookieJar = CookieJar();
+  Future<void> Function()? _onUnauthorized;
+  bool _isHandlingUnauthorized = false;
 
   late final Dio _dio = Dio(
     BaseOptions(
@@ -67,14 +77,15 @@ class ApiClient {
         }
         handler.next(options);
       },
-      onResponse: (response, handler) {
+      onResponse: (response, handler) async {
         if (kDebugMode) {
           debugPrint(
               'ApiClient response: ${response.statusCode} ${response.requestOptions.path}');
         }
+        await _handleUnauthorized(response.statusCode, response.requestOptions);
         handler.next(response);
       },
-      onError: (err, handler) {
+      onError: (err, handler) async {
         if (kDebugMode) {
           debugPrint('ApiClient error: ${err.message}');
           if (err.response != null) {
@@ -82,6 +93,7 @@ class ApiClient {
                 'ApiClient error response: ${err.response?.statusCode} ${err.response?.data}');
           }
         }
+        await _handleUnauthorized(err.response?.statusCode, err.requestOptions);
         handler.next(err);
       },
     ));
@@ -120,6 +132,42 @@ class ApiClient {
 
   void clearToken() {
     _dio.options.headers.remove('Authorization');
+  }
+
+  void setUnauthorizedHandler(Future<void> Function()? handler) {
+    _onUnauthorized = handler;
+  }
+
+  void clearUnauthorizedHandler() {
+    _onUnauthorized = null;
+  }
+
+  Future<void> _handleUnauthorized(
+    int? statusCode,
+    RequestOptions options,
+  ) async {
+    if (statusCode != 401) return;
+    if (_isHandlingUnauthorized) return;
+    if (_onUnauthorized == null) return;
+
+    final token = activeBearerToken;
+    if (token == null || token.trim().isEmpty) return;
+
+    final requestPath = options.path.toLowerCase();
+    if (requestPath.contains('/hub/auth/login') ||
+        requestPath.contains('/hub/auth/register') ||
+        requestPath.contains('/hub/auth/logout')) {
+      return;
+    }
+
+    _isHandlingUnauthorized = true;
+    try {
+      await _onUnauthorized?.call();
+    } catch (_) {
+      // Best effort logout; networking flow should continue.
+    } finally {
+      _isHandlingUnauthorized = false;
+    }
   }
 }
 

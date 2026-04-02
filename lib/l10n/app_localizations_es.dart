@@ -45,6 +45,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get languageEnglish => 'English';
 
   @override
+  String get languageIndonesian => 'Indonesio';
+
+  @override
   String get layoutResponsiveTitle => 'Diseño adaptativo';
 
   @override
@@ -618,6 +621,190 @@ class AppLocalizationsEs extends AppLocalizations {
   String get requestLogsEmpty => 'Ninguna solicitud aún';
 
   @override
+  String dashboardSubtitle(Object name) {
+    return 'Sistema central: Analíticas y consumo en línea // Bienvenido, $name';
+  }
+
+  @override
+  String get dashboardMetricsLoadError => 'No se pudieron cargar las métricas.';
+
+  @override
+  String get dashboardConsumptionStatusTitle => 'ESTADO DEL CONSUMO';
+
+  @override
+  String get dashboardConsumptionCompactDescription =>
+      'Cuando necesites ampliar límites de solicitudes por segundo, compra un plan superior o recarga créditos desde Billing.';
+
+  @override
+  String get dashboardPurchasePlanCredits => 'COMPRAR PLAN / CRÉDITOS';
+
+  @override
+  String get dashboardConsumptionSystemHealthTitle =>
+      'ESTADO DEL CONSUMO - SALUD DEL SISTEMA';
+
+  @override
+  String get dashboardConsumptionDesktopDescription =>
+      'El dashboard muestra la salud y actividad general. Billing aparece cuando decides comprar y ampliar cuotas.';
+
+  @override
+  String get dashboardPurchasePlan => 'COMPRAR PLAN';
+
+  @override
+  String get dashboardRecentActivityTitle => 'ACTIVIDAD RECIENTE';
+
+  @override
+  String get dashboardViewFullHistory => 'VER HISTORIAL COMPLETO';
+
+  @override
+  String get dashboardHistoryLoadError =>
+      'Error al cargar la actividad. Reintenta.';
+
+  @override
+  String get dashboardHistoryEmpty => 'Sin actividad reciente.';
+
+  @override
+  String get dashboardMetricUsedRequests => 'SOLICITUDES USADAS';
+
+  @override
+  String get dashboardMetricAvailable => 'DISPONIBLES';
+
+  @override
+  String get dashboardMetricSandboxCredits => 'CRÉDITOS SANDBOX';
+
+  @override
+  String get dashboardMetricTotalRequests => 'TOTAL SOLICITUDES';
+
+  @override
+  String get dashboardCreditsReserve => 'RESERVA DE CRÉDITOS:';
+
+  @override
+  String get dashboardFreeTier => 'GRATIS';
+
+  @override
+  String get billingTitle => 'billing // marketplace';
+
+  @override
+  String get billingSubtitle => 'Adquiere y gestiona tus créditos de Hub.Aura';
+
+  @override
+  String get billingTransparentPurchaseTitle =>
+      'COMPRA DE CRÉDITOS TRANSPARENTE';
+
+  @override
+  String get billingTransparentPurchaseDescription =>
+      'Conoce el coste exacto por crédito y obtén estimaciones precisas para que elijas libremente entre paquetes o cantidades a medida. Sin compromisos ocultos.';
+
+  @override
+  String get billingOnlineBalance => 'BALANCE EN LÍNEA';
+
+  @override
+  String billingAvailableRequests(Object count) {
+    return '$count solicitudes disponibles';
+  }
+
+  @override
+  String billingPlanTypeLabel(Object plan) {
+    return 'TIPO DE PLAN: $plan';
+  }
+
+  @override
+  String get billingStandardPackages => 'PAQUETES ESTANDARIZADOS';
+
+  @override
+  String get billingPlansLoadError => 'No pudimos recuperar los planes';
+
+  @override
+  String get billingCustomVolume => 'VOLUMEN A MEDIDA';
+
+  @override
+  String get billingCustomAmount => 'CANTIDAD PERSONALIZADA';
+
+  @override
+  String get billingCustomHintExample => 'Ej: 750';
+
+  @override
+  String billingRawEstimate(Object amount) {
+    return 'Estimación en bruto: aprox. \$$amount USD';
+  }
+
+  @override
+  String get billingSelectPackageError =>
+      'Selecciona un paquete o ingresa créditos personalizados';
+
+  @override
+  String get billingNoPaymentUrlError =>
+      'Pago iniciado, pero no se recibió URL de pago';
+
+  @override
+  String get billingGeneratePaymentError => 'No se pudo generar el pago';
+
+  @override
+  String get billingConnectionPaymentError =>
+      'Error de conexión al generar el pago';
+
+  @override
+  String get billingActiveGatewayTitle => 'PASARELA ACTIVA // CRYPTOMUS';
+
+  @override
+  String get billingGeneratedEncryptedUrl => 'URL GENERADA Y CIFRADA:';
+
+  @override
+  String get billingRedirectToPayment => 'REDIRECCIONAR A PAGO';
+
+  @override
+  String get billingGeneratingOrder => 'GENERANDO ORDEN...';
+
+  @override
+  String get billingProcessCryptoPayment => 'PROCESAR PAGO CRIPTOGRÁFICO';
+
+  @override
+  String get billingSecureTransactionsFooter =>
+      'Transacciones aseguradas vía Cryptomus. Comisiones ultrabajas. Sin almacenamiento de tarjetas.';
+
+  @override
+  String get billingBestValue => 'MEJOR VALOR';
+
+  @override
+  String billingUnitPrice(Object value) {
+    return 'aprox. \$$value / unidad';
+  }
+
+  @override
+  String get billingUnlimited => 'ILIMITADO';
+
+  @override
+  String billingCredits(Object count) {
+    return '$count CRÉDITOS';
+  }
+
+  @override
+  String get billingPlanUseCaseIntensive =>
+      'Ideal para equipos con uso intensivo diario.';
+
+  @override
+  String get billingPlanUseCasePersonal =>
+      'Ideal para pruebas y proyectos personales.';
+
+  @override
+  String get billingPlanUseCaseSmallTeams =>
+      'Ideal para side-projects y equipos pequeños.';
+
+  @override
+  String get billingPlanUseCaseProduction =>
+      'Ideal para producción y cargas frecuentes.';
+
+  @override
+  String billingPlanRequestsName(Object count) {
+    return '$count solicitudes';
+  }
+
+  @override
+  String get billingPlanWeeklyUnlimited => 'Semanal ilimitado';
+
+  @override
+  String get billingPopularBadge => 'Popular';
+
+  @override
   String get settingsPageSubtitle => 'Configuración interactiva del sistema';
 
   @override
@@ -682,4 +869,13 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get settingsProfileTimeout =>
       'ERR_CONNECTION: Timeout operando perfil.';
+
+  @override
+  String get settingsUploadPhoto => 'SUBIR FOTO';
+
+  @override
+  String get settingsAvatarUploaded => 'Avatar subido correctamente.';
+
+  @override
+  String get settingsAvatarUploadError => 'No se pudo subir el avatar.';
 }

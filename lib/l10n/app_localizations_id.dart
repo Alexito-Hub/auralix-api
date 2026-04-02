@@ -4,85 +4,86 @@ import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
 
-/// The translations for English (`en`).
-class AppLocalizationsEn extends AppLocalizations {
-  AppLocalizationsEn([String locale = 'en']) : super(locale);
+/// The translations for Indonesian (`id`).
+class AppLocalizationsId extends AppLocalizations {
+  AppLocalizationsId([String locale = 'id']) : super(locale);
 
   @override
   String get appTitle => 'Auralix Hub';
 
   @override
-  String get navDashboard => 'Dashboard';
+  String get navDashboard => 'Dasbor';
 
   @override
-  String get navDocs => 'Docs';
+  String get navDocs => 'Dokumentasi';
 
   @override
   String get navSandbox => 'Sandbox';
 
   @override
-  String get navSnippets => 'Snippets';
+  String get navSnippets => 'Cuplikan';
 
   @override
-  String get navHistory => 'History';
+  String get navHistory => 'Riwayat';
 
   @override
-  String get navBilling => 'Billing';
+  String get navBilling => 'Tagihan';
 
   @override
-  String get navSettings => 'Settings';
+  String get navSettings => 'Pengaturan';
 
   @override
-  String get languageLabel => 'Language';
+  String get languageLabel => 'Bahasa';
 
   @override
-  String get languageSystem => 'System';
+  String get languageSystem => 'Sistem';
 
   @override
-  String get languageSpanish => 'Spanish';
+  String get languageSpanish => 'Spanyol';
 
   @override
-  String get languageEnglish => 'English';
+  String get languageEnglish => 'Inggris';
 
   @override
-  String get languageIndonesian => 'Indonesian';
+  String get languageIndonesian => 'Indonesia';
 
   @override
-  String get layoutResponsiveTitle => 'Responsive design';
+  String get layoutResponsiveTitle => 'Desain responsif';
 
   @override
   String get layoutResponsiveSubtitle =>
-      'Optimized for mobile, tablet and desktop.';
+      'Dioptimalkan untuk ponsel, tablet, dan desktop.';
 
   @override
-  String get commonRequired => 'Required';
+  String get commonRequired => 'Wajib';
 
   @override
-  String get authLoginModuleTitle => 'Authentication Module';
+  String get authLoginModuleTitle => 'Modul Autentikasi';
 
   @override
-  String get authLoginSubtitle => 'Enter your credentials to access the hub.';
+  String get authLoginSubtitle =>
+      'Masukkan kredensial Anda untuk mengakses hub.';
 
   @override
-  String get authCaptchaRequired => 'Please complete the captcha verification.';
+  String get authCaptchaRequired => 'Selesaikan verifikasi captcha.';
 
   @override
-  String get authNoAccount => 'No account?';
+  String get authNoAccount => 'Belum punya akun?';
 
   @override
-  String get authLogin => 'Login';
+  String get authLogin => 'Masuk';
 
   @override
-  String get authRegister => 'Register';
+  String get authRegister => 'Daftar';
 
   @override
-  String get authTerms => 'Terms';
+  String get authTerms => 'Ketentuan';
 
   @override
-  String get authPrivacy => 'Privacy';
+  String get authPrivacy => 'Privasi';
 
   @override
-  String get authAuthenticate => 'Authenticate';
+  String get authAuthenticate => 'Autentikasi';
 
   @override
   String get authLoginCommand => '~/login.sh --execute';
@@ -100,84 +101,84 @@ class AppLocalizationsEn extends AppLocalizations {
   String get authPasswordPrefix => 'pass:';
 
   @override
-  String get authRegisterModuleTitle => 'Account Provisioning';
+  String get authRegisterModuleTitle => 'Penyediaan Akun';
 
   @override
-  String get authRegisterCompleteTitle => 'Registration Complete';
+  String get authRegisterCompleteTitle => 'Pendaftaran Selesai';
 
   @override
-  String get authRegisterAccountCreated => 'ACCOUNT CREATED';
+  String get authRegisterAccountCreated => 'AKUN DIBUAT';
 
   @override
   String authRegisterVerifyEmailMessage(Object email) {
-    return 'Verify your email at:\n$email';
+    return 'Verifikasi email Anda di:\n$email';
   }
 
   @override
-  String get authProceedToLogin => 'PROCEED TO LOGIN';
+  String get authProceedToLogin => 'LANJUT KE MASUK';
 
   @override
   String get authRegisterSubtitle =>
-      'New accounts receive 20 free requests and 10 sandbox limits.';
+      'Akun baru menerima 20 permintaan gratis dan 10 batas sandbox.';
 
   @override
-  String get authInvalidEmail => 'Invalid email';
+  String get authInvalidEmail => 'Email tidak valid';
 
   @override
-  String get authRegisterPasswordHint => 'min 8 characters';
+  String get authRegisterPasswordHint => 'min 8 karakter';
 
   @override
-  String get authMin8Chars => 'Min 8 chars';
+  String get authMin8Chars => 'Min 8 karakter';
 
   @override
-  String get authRegisterConfirmPasswordHint => 'repeat password';
+  String get authRegisterConfirmPasswordHint => 'ulangi kata sandi';
 
   @override
-  String get authRegisterConfirmPrefix => 'verify:';
+  String get authRegisterConfirmPrefix => 'verifikasi:';
 
   @override
-  String get authPasswordMismatch => 'Mismatch';
+  String get authPasswordMismatch => 'Tidak cocok';
 
   @override
-  String get authProvisionAccount => 'PROVISION ACCOUNT';
+  String get authProvisionAccount => 'SEDIAKAN AKUN';
 
   @override
-  String get authExistingUser => 'EXISTING USER?';
+  String get authExistingUser => 'SUDAH PUNYA AKUN?';
 
   @override
   String get authRegisterCommand => '\$ ./provision_user.sh';
 
   @override
-  String get authVerifyTitle => 'Identity Verification';
+  String get authVerifyTitle => 'Verifikasi Identitas';
 
   @override
-  String get authVerifyChecking => 'VERIFYING SIGNATURE...';
+  String get authVerifyChecking => 'MEMVERIFIKASI TANDA TANGAN...';
 
   @override
-  String get authVerifySuccessCode => 'VERIFICATION SUCCESS_200';
+  String get authVerifySuccessCode => 'VERIFIKASI_BERHASIL_200';
 
   @override
-  String get authVerifyErrorCode => 'VERIFICATION_ERR';
+  String get authVerifyErrorCode => 'GALAT_VERIFIKASI';
 
   @override
   String get authVerifySuccessMessage =>
-      'Identity confirmed. Your account is now active.';
+      'Identitas terkonfirmasi. Akun Anda kini aktif.';
 
   @override
   String get authVerifyInvalidOrExpired =>
-      'The provided link is invalid or has expired.';
+      'Tautan yang diberikan tidak valid atau kedaluwarsa.';
 
   @override
-  String get authReturnToLogin => 'RETURN TO LOGIN';
+  String get authReturnToLogin => 'KEMBALI KE MASUK';
 
   @override
-  String get authVerifyTokenMissing => 'Token missing or invalid.';
+  String get authVerifyTokenMissing => 'Token tidak ada atau tidak valid.';
 
   @override
-  String get authVerifyInvalidSignature => 'Invalid token signature.';
+  String get authVerifyInvalidSignature => 'Tanda tangan token tidak valid.';
 
   @override
-  String get authVerifyConnectionFailed => 'Connection to authority failed.';
+  String get authVerifyConnectionFailed => 'Koneksi ke otoritas gagal.';
 
   @override
   String get authVersionLabel => 'AURALIX HUB v1.0.0-rc';
@@ -194,79 +195,79 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get authSplashCoreReady => 'Core services initialized';
+  String get authSplashCoreReady => 'Layanan inti diinisialisasi';
 
   @override
-  String get authSplashSocketReady => 'WebSocket ready and listening';
+  String get authSplashSocketReady => 'WebSocket siap dan mendengarkan';
 
   @override
-  String get authSplashWaitingAuth => 'Waiting for authentication...';
+  String get authSplashWaitingAuth => 'Menunggu autentikasi...';
 
   @override
   String get authSplashStartCommand => '\$ auth_subsystem --start';
 
   @override
-  String get captchaLoadFailed => 'Could not load captcha';
+  String get captchaLoadFailed => 'Tidak dapat memuat captcha';
 
   @override
-  String get captchaValidationFailed => 'Captcha validation failed';
+  String get captchaValidationFailed => 'Validasi captcha gagal';
 
   @override
-  String get captchaIncorrectAnswer => 'Incorrect answer';
+  String get captchaIncorrectAnswer => 'Jawaban salah';
 
   @override
-  String get captchaTryAgain => 'Error while verifying. Try again.';
+  String get captchaTryAgain => 'Terjadi kesalahan saat verifikasi. Coba lagi.';
 
   @override
-  String get captchaVerified => 'Captcha verified [OK]';
+  String get captchaVerified => 'Captcha terverifikasi [OK]';
 
   @override
-  String get captchaSecurityVerification => 'Security verification';
+  String get captchaSecurityVerification => 'Verifikasi keamanan';
 
   @override
-  String get captchaUnavailable => 'Captcha unavailable';
+  String get captchaUnavailable => 'Captcha tidak tersedia';
 
   @override
-  String get captchaAnswerHint => 'Answer';
+  String get captchaAnswerHint => 'Jawaban';
 
   @override
-  String get captchaVerify => 'Verify';
+  String get captchaVerify => 'Verifikasi';
 
   @override
-  String get captchaNew => 'New captcha';
+  String get captchaNew => 'Captcha baru';
 
   @override
-  String get commonRetry => 'Retry';
+  String get commonRetry => 'Coba lagi';
 
   @override
-  String get commonConnectionError => 'Connection error';
+  String get commonConnectionError => 'Kesalahan koneksi';
 
   @override
-  String get routerNotFoundTitle => 'Route not found';
+  String get routerNotFoundTitle => 'Rute tidak ditemukan';
 
   @override
-  String get routerUnknownError => 'Unknown router error';
+  String get routerUnknownError => 'Kesalahan router tidak diketahui';
 
   @override
-  String get routerGoHome => 'Go to home';
+  String get routerGoHome => 'Ke beranda';
 
   @override
-  String get routerOpenDashboard => 'Open dashboard';
+  String get routerOpenDashboard => 'Buka dasbor';
 
   @override
-  String get settingsLocaleAutoLabel => 'Use system language when available.';
+  String get settingsLocaleAutoLabel => 'Gunakan bahasa sistem jika tersedia.';
 
   @override
-  String get appShellOpenNavigation => 'Open navigation';
+  String get appShellOpenNavigation => 'Buka navigasi';
 
   @override
-  String get appShellNoSession => 'No active session';
+  String get appShellNoSession => 'Tidak ada sesi aktif';
 
   @override
-  String get appShellPlanLabel => 'Plan';
+  String get appShellPlanLabel => 'Paket';
 
   @override
-  String get appShellLogout => 'Sign out';
+  String get appShellLogout => 'Keluar';
 
   @override
   String get snippetsAnyLanguage => 'ANY_LANG';
@@ -604,272 +605,271 @@ class AppLocalizationsEn extends AppLocalizations {
   String get historyColumnCredit => 'CREDIT';
 
   @override
-  String get requestLogsLiveTitle => 'real-time logs';
+  String get requestLogsLiveTitle => 'log waktu nyata';
 
   @override
   String get requestLogsLiveBadge => 'LIVE';
 
   @override
-  String get requestLogsRefresh => 'Refresh';
+  String get requestLogsRefresh => 'Muat ulang';
 
   @override
-  String get requestLogsEmpty => 'No requests yet';
+  String get requestLogsEmpty => 'Belum ada permintaan';
 
   @override
   String dashboardSubtitle(Object name) {
-    return 'Core system: Analytics and live consumption // Welcome, $name';
+    return 'Sistem inti: Analitik dan konsumsi langsung // Selamat datang, $name';
   }
 
   @override
-  String get dashboardMetricsLoadError => 'Could not load metrics.';
+  String get dashboardMetricsLoadError => 'Tidak dapat memuat metrik.';
 
   @override
-  String get dashboardConsumptionStatusTitle => 'CONSUMPTION STATUS';
+  String get dashboardConsumptionStatusTitle => 'STATUS KONSUMSI';
 
   @override
   String get dashboardConsumptionCompactDescription =>
-      'When you need to expand request-per-second limits, purchase a higher plan or top up credits from Billing.';
+      'Saat Anda perlu memperluas batas permintaan per detik, beli paket yang lebih tinggi atau tambah kredit dari Billing.';
 
   @override
-  String get dashboardPurchasePlanCredits => 'PURCHASE PLAN / CREDITS';
+  String get dashboardPurchasePlanCredits => 'BELI PAKET / KREDIT';
 
   @override
   String get dashboardConsumptionSystemHealthTitle =>
-      'CONSUMPTION STATUS - SYSTEM HEALTH';
+      'STATUS KONSUMSI - KESEHATAN SISTEM';
 
   @override
   String get dashboardConsumptionDesktopDescription =>
-      'The dashboard shows overall health and activity. Billing appears when you decide to purchase and expand quotas.';
+      'Dasbor menampilkan kesehatan dan aktivitas keseluruhan. Billing muncul saat Anda memutuskan membeli dan memperluas kuota.';
 
   @override
-  String get dashboardPurchasePlan => 'PURCHASE PLAN';
+  String get dashboardPurchasePlan => 'BELI PAKET';
 
   @override
-  String get dashboardRecentActivityTitle => 'RECENT ACTIVITY';
+  String get dashboardRecentActivityTitle => 'AKTIVITAS TERKINI';
 
   @override
-  String get dashboardViewFullHistory => 'VIEW FULL HISTORY';
+  String get dashboardViewFullHistory => 'LIHAT RIWAYAT LENGKAP';
 
   @override
-  String get dashboardHistoryLoadError =>
-      'Error loading activity. Please retry.';
+  String get dashboardHistoryLoadError => 'Gagal memuat aktivitas. Coba lagi.';
 
   @override
-  String get dashboardHistoryEmpty => 'No recent activity.';
+  String get dashboardHistoryEmpty => 'Belum ada aktivitas terbaru.';
 
   @override
-  String get dashboardMetricUsedRequests => 'USED REQUESTS';
+  String get dashboardMetricUsedRequests => 'PERMINTAAN TERPAKAI';
 
   @override
-  String get dashboardMetricAvailable => 'AVAILABLE';
+  String get dashboardMetricAvailable => 'TERSEDIA';
 
   @override
-  String get dashboardMetricSandboxCredits => 'SANDBOX CREDITS';
+  String get dashboardMetricSandboxCredits => 'KREDIT SANDBOX';
 
   @override
-  String get dashboardMetricTotalRequests => 'TOTAL REQUESTS';
+  String get dashboardMetricTotalRequests => 'TOTAL PERMINTAAN';
 
   @override
-  String get dashboardCreditsReserve => 'CREDIT RESERVE:';
+  String get dashboardCreditsReserve => 'CADANGAN KREDIT:';
 
   @override
-  String get dashboardFreeTier => 'FREE TIER';
+  String get dashboardFreeTier => 'TIER GRATIS';
 
   @override
   String get billingTitle => 'billing // marketplace';
 
   @override
-  String get billingSubtitle => 'Acquire and manage your Hub.Aura credits';
+  String get billingSubtitle => 'Dapatkan dan kelola kredit Hub.Aura Anda';
 
   @override
-  String get billingTransparentPurchaseTitle => 'TRANSPARENT CREDIT PURCHASE';
+  String get billingTransparentPurchaseTitle => 'PEMBELIAN KREDIT TRANSPARAN';
 
   @override
   String get billingTransparentPurchaseDescription =>
-      'Know the exact cost per credit and get precise estimates so you can freely choose between bundles or custom amounts. No hidden commitments.';
+      'Ketahui biaya tepat per kredit dan dapatkan estimasi akurat agar Anda bebas memilih paket atau jumlah kustom. Tanpa komitmen tersembunyi.';
 
   @override
-  String get billingOnlineBalance => 'ONLINE BALANCE';
+  String get billingOnlineBalance => 'SALDO ONLINE';
 
   @override
   String billingAvailableRequests(Object count) {
-    return '$count requests available';
+    return '$count permintaan tersedia';
   }
 
   @override
   String billingPlanTypeLabel(Object plan) {
-    return 'PLAN TYPE: $plan';
+    return 'JENIS PAKET: $plan';
   }
 
   @override
-  String get billingStandardPackages => 'STANDARD PACKAGES';
+  String get billingStandardPackages => 'PAKET STANDAR';
 
   @override
-  String get billingPlansLoadError => 'Could not load plans';
+  String get billingPlansLoadError => 'Tidak dapat memuat paket';
 
   @override
-  String get billingCustomVolume => 'CUSTOM VOLUME';
+  String get billingCustomVolume => 'VOLUME KUSTOM';
 
   @override
-  String get billingCustomAmount => 'CUSTOM AMOUNT';
+  String get billingCustomAmount => 'JUMLAH KUSTOM';
 
   @override
-  String get billingCustomHintExample => 'Ex: 750';
+  String get billingCustomHintExample => 'Contoh: 750';
 
   @override
   String billingRawEstimate(Object amount) {
-    return 'Raw estimate: approx. \$$amount USD';
+    return 'Estimasi kasar: sekitar \$$amount USD';
   }
 
   @override
   String get billingSelectPackageError =>
-      'Select a package or enter custom credits';
+      'Pilih paket atau masukkan kredit kustom';
 
   @override
   String get billingNoPaymentUrlError =>
-      'Payment started, but no payment URL was received';
+      'Pembayaran dimulai, tetapi URL pembayaran tidak diterima';
 
   @override
-  String get billingGeneratePaymentError => 'Could not generate payment';
+  String get billingGeneratePaymentError => 'Tidak dapat membuat pembayaran';
 
   @override
   String get billingConnectionPaymentError =>
-      'Connection error while generating payment';
+      'Kesalahan koneksi saat membuat pembayaran';
 
   @override
-  String get billingActiveGatewayTitle => 'ACTIVE GATEWAY // CRYPTOMUS';
+  String get billingActiveGatewayTitle => 'GATEWAY AKTIF // CRYPTOMUS';
 
   @override
-  String get billingGeneratedEncryptedUrl => 'GENERATED AND ENCRYPTED URL:';
+  String get billingGeneratedEncryptedUrl =>
+      'URL YANG DIHASILKAN DAN DIENKRIPSI:';
 
   @override
-  String get billingRedirectToPayment => 'REDIRECT TO PAYMENT';
+  String get billingRedirectToPayment => 'ALIHKAN KE PEMBAYARAN';
 
   @override
-  String get billingGeneratingOrder => 'GENERATING ORDER...';
+  String get billingGeneratingOrder => 'MEMBUAT PESANAN...';
 
   @override
-  String get billingProcessCryptoPayment => 'PROCESS CRYPTO PAYMENT';
+  String get billingProcessCryptoPayment => 'PROSES PEMBAYARAN KRIPTO';
 
   @override
   String get billingSecureTransactionsFooter =>
-      'Transactions secured via Cryptomus. Ultra-low fees. No card storage.';
+      'Transaksi diamankan melalui Cryptomus. Biaya sangat rendah. Tanpa penyimpanan kartu.';
 
   @override
-  String get billingBestValue => 'BEST VALUE';
+  String get billingBestValue => 'NILAI TERBAIK';
 
   @override
   String billingUnitPrice(Object value) {
-    return 'approx. \$$value / unit';
+    return 'sekitar \$$value / unit';
   }
 
   @override
-  String get billingUnlimited => 'UNLIMITED';
+  String get billingUnlimited => 'TIDAK TERBATAS';
 
   @override
   String billingCredits(Object count) {
-    return '$count CREDITS';
+    return '$count KREDIT';
   }
 
   @override
   String get billingPlanUseCaseIntensive =>
-      'Ideal for teams with intensive daily usage.';
+      'Ideal untuk tim dengan penggunaan harian intensif.';
 
   @override
   String get billingPlanUseCasePersonal =>
-      'Ideal for testing and personal projects.';
+      'Ideal untuk pengujian dan proyek pribadi.';
 
   @override
   String get billingPlanUseCaseSmallTeams =>
-      'Ideal for side projects and small teams.';
+      'Ideal untuk proyek sampingan dan tim kecil.';
 
   @override
   String get billingPlanUseCaseProduction =>
-      'Ideal for production and frequent workloads.';
+      'Ideal untuk produksi dan beban kerja yang sering.';
 
   @override
   String billingPlanRequestsName(Object count) {
-    return '$count requests';
+    return '$count permintaan';
   }
 
   @override
-  String get billingPlanWeeklyUnlimited => 'Weekly unlimited';
+  String get billingPlanWeeklyUnlimited => 'Mingguan tanpa batas';
 
   @override
   String get billingPopularBadge => 'Popular';
 
   @override
-  String get settingsPageSubtitle => 'Interactive system configuration';
+  String get settingsPageSubtitle => 'Konfigurasi sistem interaktif';
 
   @override
-  String get settingsOperatorProfileTitle => 'Operator Profile';
+  String get settingsOperatorProfileTitle => 'Profil Operator';
 
   @override
-  String get settingsEmailVerified => 'STATUS: VERIFIED';
+  String get settingsEmailVerified => 'STATUS: TERVERIFIKASI';
 
   @override
-  String get settingsEmailNotVerified => 'STATUS: NOT VERIFIED';
+  String get settingsEmailNotVerified => 'STATUS: BELUM TERVERIFIKASI';
 
   @override
-  String get settingsPublicAlias => 'PUBLIC IDENTIFIER';
+  String get settingsPublicAlias => 'IDENTITAS PUBLIK';
 
   @override
-  String get settingsAliasHint => 'Enter your identifier (alias)';
+  String get settingsAliasHint => 'Masukkan identitas Anda (alias)';
 
   @override
   String get settingsAliasPrefix => 'alias:';
 
   @override
-  String get settingsUpdateProfile => 'UPDATE PROFILE';
+  String get settingsUpdateProfile => 'PERBARUI PROFIL';
 
   @override
-  String get settingsThemeMatrixTitle => 'Visual Matrix [Themes]';
+  String get settingsThemeMatrixTitle => 'Matriks Visual [Tema]';
 
   @override
-  String get settingsThemeActive => '[ACTIVE]';
+  String get settingsThemeActive => '[AKTIF]';
 
   @override
-  String get settingsThemeInactive => 'INACTIVE';
+  String get settingsThemeInactive => 'TIDAK AKTIF';
 
   @override
-  String get settingsDesignTokensTitle => 'Design Tokens';
+  String get settingsDesignTokensTitle => 'Token Desain';
 
   @override
-  String get settingsApiCredentialsTitle => 'API Credentials';
+  String get settingsApiCredentialsTitle => 'Kredensial API';
 
   @override
-  String get settingsSessionTokenPanelTitle => 'Intercepted session token';
+  String get settingsSessionTokenPanelTitle => 'Token sesi yang ditangkap';
 
   @override
-  String get settingsCriticalDirectivesTitle => 'Critical Directives';
+  String get settingsCriticalDirectivesTitle => 'Direktif Kritis';
 
   @override
-  String get settingsTerminateSessionTitle => 'TERMINATE SESSION';
+  String get settingsTerminateSessionTitle => 'AKHIRI SESI';
 
   @override
   String get settingsTerminateSessionDescription =>
-      'Close all active accesses on this node and destroy the in-memory token.';
+      'Tutup semua akses aktif pada node ini dan hapus token di memori.';
 
   @override
-  String get settingsPurgeButton => 'PURGE';
+  String get settingsPurgeButton => 'BERSIHKAN';
 
   @override
-  String get settingsProfileSaved =>
-      'Profile successfully updated on the network.';
+  String get settingsProfileSaved => 'Profil berhasil diperbarui di jaringan.';
 
   @override
-  String get settingsProfileSaveError => 'Data integrity failure.';
+  String get settingsProfileSaveError => 'Kegagalan integritas data.';
 
   @override
   String get settingsProfileTimeout =>
-      'ERR_CONNECTION: Timeout while updating profile.';
+      'ERR_CONNECTION: Waktu habis saat memperbarui profil.';
 
   @override
-  String get settingsUploadPhoto => 'UPLOAD PHOTO';
+  String get settingsUploadPhoto => 'UNGGAH FOTO';
 
   @override
-  String get settingsAvatarUploaded => 'Avatar uploaded successfully.';
+  String get settingsAvatarUploaded => 'Avatar berhasil diunggah.';
 
   @override
-  String get settingsAvatarUploadError => 'Could not upload avatar.';
+  String get settingsAvatarUploadError => 'Tidak dapat mengunggah avatar.';
 }

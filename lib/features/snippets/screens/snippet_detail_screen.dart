@@ -21,6 +21,7 @@ class SnippetDetailScreen extends StatefulWidget {
 
 class _SnippetDetailScreenState extends State<SnippetDetailScreen> {
   bool _loading = true;
+  bool _downloadAttempting = false;
   Map<String, dynamic>? _snippet;
   bool _needsPassword = false;
   final _passCtrl = TextEditingController();
@@ -75,6 +76,7 @@ class _SnippetDetailScreenState extends State<SnippetDetailScreen> {
   }
 
   Future<void> _downloadSnippet() async {
+    if (_downloadAttempting) return;
     if ((_snippet?['allowDownload'] ?? true) != true) {
       final ext = AuralixThemeExtension.of(context);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -100,14 +102,40 @@ class _SnippetDetailScreenState extends State<SnippetDetailScreen> {
             ...query,
           });
 
-    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
-    if (!opened && mounted) {
-      final ext = AuralixThemeExtension.of(context);
+    setState(() => _downloadAttempting = true);
+    final ext = AuralixThemeExtension.of(context);
+    try {
+      final opened =
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!mounted) return;
+
+      if (!opened) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: const Text('No se pudo iniciar la descarga'),
+          backgroundColor: ext.surfaceVariant,
+          behavior: SnackBarBehavior.floating,
+        ));
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text(
+            'Descarga iniciada. Si no aparece archivo, revisa permisos del navegador.'),
+        backgroundColor: ext.surfaceVariant,
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 4),
+      ));
+    } catch (_) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: const Text('No se pudo iniciar la descarga'),
         backgroundColor: ext.surfaceVariant,
         behavior: SnackBarBehavior.floating,
       ));
+    } finally {
+      if (mounted) {
+        setState(() => _downloadAttempting = false);
+      }
     }
   }
 

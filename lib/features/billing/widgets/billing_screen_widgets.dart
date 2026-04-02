@@ -49,6 +49,8 @@ class _HoverBillingCardState extends State<HoverBillingCard> {
 
 class _PlanCard extends StatefulWidget {
   final Map<String, dynamic> plan;
+  final String planName;
+  final String? badgeText;
   final bool selected;
   final bool bestValue;
   final String helperText;
@@ -57,6 +59,8 @@ class _PlanCard extends StatefulWidget {
 
   const _PlanCard({
     required this.plan,
+    required this.planName,
+    required this.badgeText,
     required this.selected,
     required this.bestValue,
     required this.helperText,
@@ -73,8 +77,8 @@ class _PlanCardState extends State<_PlanCard> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final ext = AuralixThemeExtension.of(context);
-    final badge = widget.plan['badge'] as String?;
     final rawCredits = widget.plan['credits'];
     final credits = rawCredits is num
         ? rawCredits.toInt()
@@ -132,7 +136,7 @@ class _PlanCardState extends State<_PlanCard> {
                       size: 16,
                       color: widget.selected ? ext.primary : ext.textMuted),
                   const SizedBox(width: 8),
-                  if (badge != null)
+                    if (widget.badgeText != null)
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 6, vertical: 2),
@@ -142,7 +146,7 @@ class _PlanCardState extends State<_PlanCard> {
                           borderRadius: BorderRadius.circular(3),
                           border: Border.all(
                               color: ext.warning.withValues(alpha: 0.3))),
-                      child: Text(badge.toUpperCase(),
+                      child: Text(widget.badgeText!.toUpperCase(),
                           style: TextStyle(
                               color: ext.warning,
                               fontSize: 9,
@@ -160,7 +164,7 @@ class _PlanCardState extends State<_PlanCard> {
                           borderRadius: BorderRadius.circular(3),
                           border: Border.all(
                               color: ext.success.withValues(alpha: 0.3))),
-                      child: Text('BEST VALUE',
+                        child: Text(l10n.billingBestValue,
                           style: TextStyle(
                               color: ext.success,
                               fontSize: 9,
@@ -170,7 +174,7 @@ class _PlanCardState extends State<_PlanCard> {
                 ],
               ),
               const SizedBox(height: 12),
-              Text(widget.plan['name'].toString().toUpperCase(),
+                    Text(widget.planName.toUpperCase(),
                   style: TextStyle(
                       color: isActive ? ext.text : ext.textMuted,
                       fontSize: 13,
@@ -203,7 +207,7 @@ class _PlanCardState extends State<_PlanCard> {
                       const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                   decoration: BoxDecoration(
                       color: ext.bg, borderRadius: BorderRadius.circular(3)),
-                  child: Text('â‰ˆ \$${widget.unitPrice} / u',
+                  child: Text(l10n.billingUnitPrice(widget.unitPrice!),
                       style: TextStyle(
                           color: ext.textMuted,
                           fontSize: 10,
@@ -211,7 +215,10 @@ class _PlanCardState extends State<_PlanCard> {
                 ),
               const Spacer(),
               Divider(color: ext.border.withValues(alpha: 0.5), height: 24),
-              Text(credits < 0 ? 'ILIMITADO' : '$credits CRÃ‰DITOS',
+                Text(
+                  credits < 0
+                    ? l10n.billingUnlimited
+                    : l10n.billingCredits(credits),
                   style: TextStyle(
                       color: ext.text,
                       fontSize: 11,

@@ -71,6 +71,7 @@ class WsLogsNotifier extends StateNotifier<List<WsLogEntry>> {
 
   io.Socket? _socket;
   Timer? _retryTimer;
+  bool _disposed = false;
   bool _connecting = false;
   bool _shouldReconnect = false;
   int _retryCount = 0;
@@ -110,6 +111,7 @@ class WsLogsNotifier extends StateNotifier<List<WsLogEntry>> {
   }
 
   void connect() {
+    if (_disposed) return;
     _shouldReconnect = true;
     if (_connecting) return;
     if (_socket != null) return;
@@ -117,7 +119,7 @@ class WsLogsNotifier extends StateNotifier<List<WsLogEntry>> {
   }
 
   void _open() {
-    if (!_shouldReconnect) return;
+    if (_disposed || !_shouldReconnect) return;
 
     _retryTimer?.cancel();
     _retryTimer = null;
@@ -145,11 +147,13 @@ class WsLogsNotifier extends StateNotifier<List<WsLogEntry>> {
       _socket = socket;
 
       socket.onConnect((_) {
+        if (_disposed) return;
         _retryCount = 0;
         _connecting = false;
       });
 
       socket.on('request_log', (data) {
+        if (_disposed) return;
         try {
           final json = _toJsonMap(data);
           if (json == null) return;
@@ -161,9 +165,18 @@ class WsLogsNotifier extends StateNotifier<List<WsLogEntry>> {
         } catch (_) {}
       });
 
-      socket.onConnectError((_) => _handleSocketFailure());
-      socket.onError((_) => _handleSocketFailure());
-      socket.onDisconnect((_) => _handleSocketFailure());
+      socket.onConnectError((_) {
+        if (_disposed) return;
+        _handleSocketFailure();
+      });
+      socket.onError((_) {
+        if (_disposed) return;
+        _handleSocketFailure();
+      });
+      socket.onDisconnect((_) {
+        if (_disposed) return;
+        _handleSocketFailure();
+      });
       socket.connect();
     } catch (_) {
       _connecting = false;
@@ -173,6 +186,7 @@ class WsLogsNotifier extends StateNotifier<List<WsLogEntry>> {
   }
 
   void _handleSocketFailure() {
+    if (_disposed) return;
     _teardownSocket();
     _connecting = false;
     _scheduleReconnect();
@@ -191,12 +205,15 @@ class WsLogsNotifier extends StateNotifier<List<WsLogEntry>> {
   }
 
   void _scheduleReconnect() {
-    if (!_shouldReconnect) return;
+    if (_disposed || !_shouldReconnect) return;
     if (_retryCount >= _maxRetries) return;
 
     _retryCount += 1;
     _retryTimer?.cancel();
-    _retryTimer = Timer(_retryDelay * _retryCount, _open);
+    _retryTimer = Timer(_retryDelay * _retryCount, () {
+      if (_disposed) return;
+      _open();
+    });
   }
 
   void disconnect() {
@@ -229,6 +246,7 @@ class WsLogsNotifier extends StateNotifier<List<WsLogEntry>> {
 
   @override
   void dispose() {
+    _disposed = true;
     disconnect();
     super.dispose();
   }

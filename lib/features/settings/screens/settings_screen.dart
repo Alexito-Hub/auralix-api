@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/theme/theme_extension.dart';
 import '../../../core/theme/app_colors.dart';
@@ -23,6 +25,7 @@ class SettingsScreen extends ConsumerStatefulWidget {
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   final _nameCtrl = TextEditingController();
   bool _saving = false;
+  bool _avatarUploading = false;
   bool _nameHydrated = false;
 
   @override
@@ -60,6 +63,54 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           error: true);
     } finally {
       if (mounted) setState(() => _saving = false);
+    }
+  }
+
+  Future<void> _uploadAvatar() async {
+    if (_avatarUploading) return;
+    final l10n = AppLocalizations.of(context)!;
+    final ext = AuralixThemeExtension.of(context);
+
+    final picked = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['jpg', 'jpeg', 'png', 'webp'],
+      withData: true,
+    );
+    if (!mounted || picked == null || picked.files.isEmpty) return;
+
+    final file = picked.files.first;
+    final bytes = file.bytes;
+    if (bytes == null || bytes.isEmpty) {
+      _showTerminalToast(context, ext, l10n.settingsAvatarUploadError,
+          error: true);
+      return;
+    }
+
+    setState(() => _avatarUploading = true);
+    try {
+      final formData = FormData.fromMap({
+        'avatar': MultipartFile.fromBytes(bytes, filename: file.name),
+      });
+      final res = await ApiClient.instance.post('/hub/user/avatar', data: formData);
+      if (!mounted) return;
+
+      if (res.data['status'] == true) {
+        ref.invalidate(settingsAuthProvider);
+        _showTerminalToast(context, ext, l10n.settingsAvatarUploaded);
+      } else {
+        _showTerminalToast(
+          context,
+          ext,
+          res.data['msg']?.toString() ?? l10n.settingsAvatarUploadError,
+          error: true,
+        );
+      }
+    } catch (_) {
+      if (!mounted) return;
+      _showTerminalToast(context, ext, l10n.settingsAvatarUploadError,
+          error: true);
+    } finally {
+      if (mounted) setState(() => _avatarUploading = false);
     }
   }
 
@@ -118,6 +169,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final currentVariant = ref.watch(settingsThemeProvider);
     final currentLocale = ref.watch(settingsLocaleProvider);
     final languageSelection = currentLocale?.languageCode ?? 'system';
+    String selectedLanguageLabel() {
+      switch (languageSelection) {
+        case 'es':
+          return l10n.languageSpanish;
+        case 'en':
+          return l10n.languageEnglish;
+        case 'id':
+          return l10n.languageIndonesian;
+        default:
+          return l10n.languageSystem;
+      }
+    }
     final hPadding = context.pageHorizontalPadding;
 
     if (user != null && !_nameHydrated) {
@@ -204,14 +267,31 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   child: CircleAvatar(
                                     radius: 28,
                                     backgroundColor: ext.surfaceVariant,
-                                    child: Text(
-                                      user.email[0].toUpperCase(),
-                                      style: TextStyle(
-                                          color: ext.primary,
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.bold,
-                                          fontFamily: 'JetBrainsMono'),
-                                    ),
+                                    child: (user.avatarUrl ?? '').trim().isNotEmpty
+                                        ? ClipOval(
+                                            child: Image.network(
+                                              user.avatarUrl!,
+                                              width: 56,
+                                              height: 56,
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (_, __, ___) => Text(
+                                                user.email[0].toUpperCase(),
+                                                style: TextStyle(
+                                                    color: ext.primary,
+                                                    fontSize: 24,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontFamily: 'JetBrainsMono'),
+                                              ),
+                                            ),
+                                          )
+                                        : Text(
+                                            user.email[0].toUpperCase(),
+                                            style: TextStyle(
+                                                color: ext.primary,
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'JetBrainsMono'),
+                                          ),
                                   ),
                                 )
                                     .animate(
@@ -264,6 +344,35 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   ),
                                 ),
                               ],
+                            ),
+                            const SizedBox(height: 12),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: OutlinedButton.icon(
+                                onPressed: _avatarUploading ? null : _uploadAvatar,
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: ext.primary,
+                                  side: BorderSide(
+                                      color: ext.primary.withValues(alpha: 0.5)),
+                                ),
+                                icon: _avatarUploading
+                                    ? SizedBox(
+                                        width: 14,
+                                        height: 14,
+                                        child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: ext.primary),
+                                      )
+                                    : const Icon(Icons.photo_camera_outlined,
+                                        size: 14),
+                                label: Text(
+                                  l10n.settingsUploadPhoto,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'JetBrainsMono',
+                                      fontSize: 11),
+                                ),
+                              ),
                             ),
                             const SizedBox(height: 24),
                             Divider(
@@ -501,6 +610,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                       value: 'en',
                                       child: Text(
                                           '> ${l10n.languageEnglish.toUpperCase()}')),
+                                    DropdownMenuItem(
+                                      value: 'id',
+                                      child: Text(
+                                        '> ${l10n.languageIndonesian.toUpperCase()}')),
                                 ],
                                 onChanged: (value) {
                                   if (value == null) return;
@@ -521,7 +634,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           AnimatedSwitcher(
                             duration: const Duration(milliseconds: 220),
                             child: Text(
-                              '// ${l10n.layoutResponsiveSubtitle} (${languageSelection == 'system' ? l10n.languageSystem : languageSelection.toUpperCase()})',
+                              '// ${l10n.layoutResponsiveSubtitle} (${selectedLanguageLabel().toUpperCase()})',
                               key: ValueKey(languageSelection),
                               style: TextStyle(
                                   color: ext.textMuted,

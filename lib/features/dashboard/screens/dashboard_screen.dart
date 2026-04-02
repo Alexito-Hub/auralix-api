@@ -2,6 +2,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
+import 'package:dio/dio.dart';
+import 'package:hub_aura/l10n/app_localizations.dart';
 import '../../../core/theme/theme_extension.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/ui/breakpoints.dart';
@@ -15,10 +17,19 @@ final _metricsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
   try {
     final res = await ApiClient.instance.get('/hub/user/metrics');
     if (res.data['status'] == true) {
-      return res.data['data'] as Map<String, dynamic>;
+      final data = res.data['data'];
+      if (data is Map<String, dynamic>) return data;
+      if (data is Map) {
+        return data.map((key, value) => MapEntry(key.toString(), value));
+      }
+      return const <String, dynamic>{};
     }
-  } catch (_) {}
-  return {};
+    throw Exception(res.data['msg']?.toString() ?? 'Failed to load metrics');
+  } on DioException catch (e) {
+    final payload = e.response?.data;
+    final message = payload is Map ? payload['msg']?.toString() : null;
+    throw Exception(message ?? 'Connection error while loading metrics');
+  }
 });
 
 // Provides 8 most recent history logs for the preview panel
@@ -28,10 +39,25 @@ final _historyPreviewProvider =
     final res = await ApiClient.instance
         .get('/hub/user/history', params: {'limit': '8'});
     if (res.data['status'] == true) {
-      return List<Map<String, dynamic>>.from(res.data['data']['logs'] ?? []);
+      final data = res.data['data'];
+      if (data is Map && data['logs'] is List) {
+        return List<Map<String, dynamic>>.from(data['logs']);
+      }
+      if (data is List) {
+        return data
+            .whereType<Map>()
+            .map((row) => row.map((k, v) => MapEntry(k.toString(), v)))
+            .toList();
+      }
+      return const <Map<String, dynamic>>[];
     }
-  } catch (_) {}
-  return const <Map<String, dynamic>>[];
+    throw Exception(
+        res.data['msg']?.toString() ?? 'Failed to load recent activity');
+  } on DioException catch (e) {
+    final payload = e.response?.data;
+    final message = payload is Map ? payload['msg']?.toString() : null;
+    throw Exception(message ?? 'Connection error while loading recent activity');
+  }
 });
 
 class DashboardScreen extends ConsumerWidget {
@@ -40,6 +66,7 @@ class DashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ext = AuralixThemeExtension.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final user = ref.watch(authProvider).valueOrNull;
     final metrics = ref.watch(_metricsProvider);
     final historyPreview = ref.watch(_historyPreviewProvider);
@@ -96,7 +123,7 @@ class DashboardScreen extends ConsumerWidget {
                       fontFamily: 'JetBrainsMono'),
                 ),
                 Text(
-                  user?.plan.toUpperCase() ?? 'FREE TIER',
+                  user?.plan.toUpperCase() ?? l10n.dashboardFreeTier,
                   style: TextStyle(
                       color: ext.accent,
                       fontSize: 10,
@@ -147,9 +174,11 @@ class DashboardScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       TerminalPageHeader(
-                        title: 'dashboard',
-                        subtitle:
-                            'Sistema central: AnalÃ­ticas y Consumo en lÃ­nea // Welcome, ${user?.displayName ?? user?.email.split('@').first ?? 'dev'}',
+                        title: l10n.navDashboard.toLowerCase(),
+                        subtitle: l10n.dashboardSubtitle(
+                            user?.displayName ??
+                                user?.email.split('@').first ??
+                                'dev'),
                         actions: [profileChip],
                       ),
                       const SizedBox(height: 24),
@@ -158,9 +187,15 @@ class DashboardScreen extends ConsumerWidget {
                       metrics
                           .when(
                             loading: () => const _MetricsLoading(),
-                            error: (_, __) => const SizedBox(),
+                            error: (_, __) => Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Text(
+                                l10n.dashboardMetricsLoadError,
+                                style: TextStyle(color: ext.error),
+                              ),
+                            ),
                             data: (data) =>
-                                _MetricsGrid(user: user, data: data),
+                                _MetricsGrid(user: user, data: data, l10n: l10n),
                           )
                           .animate()
                           .fadeIn(duration: 300.ms, curve: Curves.easeOut)
@@ -169,7 +204,7 @@ class DashboardScreen extends ConsumerWidget {
 
                       // Credits Bar
                       if (user != null) ...[
-                        _CreditsBar(user: user)
+                        _CreditsBar(user: user, l10n: l10n)
                             .animate()
                             .fadeIn(delay: 150.ms)
                             .slideX(begin: -0.05),
@@ -187,7 +222,7 @@ class DashboardScreen extends ConsumerWidget {
                                       Icon(Icons.insights,
                                           size: 16, color: ext.accent),
                                       const SizedBox(width: 8),
-                                      Text('ESTADO DEL CONSUMO',
+                                      Text(l10n.dashboardConsumptionStatusTitle,
                                           style: TextStyle(
                                               color: ext.text,
                                               fontSize: 13,
@@ -196,8 +231,7 @@ class DashboardScreen extends ConsumerWidget {
                                     ],
                                   ),
                                   const SizedBox(height: 8),
-                                  Text(
-                                      'Cuando necesites ampliar lÃ­mites de llamadas por segundo, compra un plan superior o recarga crÃ©ditos desde Billing.',
+                                    Text(l10n.dashboardConsumptionCompactDescription,
                                       style: TextStyle(
                                           color: ext.textMuted,
                                           fontSize: 12,
@@ -209,8 +243,8 @@ class DashboardScreen extends ConsumerWidget {
                                       onPressed: () => context.go('/billing'),
                                       icon: const Icon(Icons.credit_card,
                                           size: 14),
-                                      label: const Text(
-                                          'COMPRAR PLAN / CRÃ‰DITOS'),
+                                      label: Text(
+                                        l10n.dashboardPurchasePlanCredits),
                                       style: ElevatedButton.styleFrom(
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 16)),
@@ -228,16 +262,16 @@ class DashboardScreen extends ConsumerWidget {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                            'ESTADO DEL CONSUMO - SALUD DEL SISTEMA',
+                                      Text(l10n
+                                        .dashboardConsumptionSystemHealthTitle,
                                             style: TextStyle(
                                                 color: ext.text,
                                                 fontSize: 13,
                                                 fontWeight: FontWeight.w700,
                                                 fontFamily: 'JetBrainsMono')),
                                         const SizedBox(height: 4),
-                                        Text(
-                                            'El dashboard muestra la salud y actividad general. El panel de Billing solo aparece cuando decides efectuar una compra para ampliar cuotas.',
+                                      Text(
+                                        l10n.dashboardConsumptionDesktopDescription,
                                             style: TextStyle(
                                                 color: ext.textMuted,
                                                 fontSize: 12)),
@@ -249,8 +283,8 @@ class DashboardScreen extends ConsumerWidget {
                                     onPressed: () => context.go('/billing'),
                                     icon:
                                         const Icon(Icons.credit_card, size: 16),
-                                    label: const Text('COMPRAR PLAN',
-                                        style: TextStyle(
+                                    label: Text(l10n.dashboardPurchasePlan,
+                                      style: const TextStyle(
                                             fontFamily: 'JetBrainsMono',
                                             fontWeight: FontWeight.bold)),
                                     style: ElevatedButton.styleFrom(
@@ -263,7 +297,8 @@ class DashboardScreen extends ConsumerWidget {
                       const SizedBox(height: 32),
 
                       // History Preview
-                      _HistoryPreviewPanel(state: historyPreview, ext: ext)
+                            _HistoryPreviewPanel(
+                              state: historyPreview, ext: ext, l10n: l10n)
                           .animate()
                           .fadeIn(delay: 300.ms),
                       const SizedBox(height: 32),
@@ -274,7 +309,7 @@ class DashboardScreen extends ConsumerWidget {
                           Icon(Icons.terminal_outlined,
                               size: 16, color: ext.primary),
                           const SizedBox(width: 8),
-                          Text('LOGS EN TIEMPO REAL',
+                          Text(l10n.requestLogsLiveTitle.toUpperCase(),
                               style: TextStyle(
                                   color: ext.primary,
                                   fontSize: 12,
@@ -365,8 +400,10 @@ class _HoverGlowCardState extends State<HoverGlowCard> {
 class _HistoryPreviewPanel extends StatelessWidget {
   final AsyncValue<List<Map<String, dynamic>>> state;
   final AuralixThemeExtension ext;
+  final AppLocalizations l10n;
 
-  const _HistoryPreviewPanel({required this.state, required this.ext});
+  const _HistoryPreviewPanel(
+      {required this.state, required this.ext, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -379,7 +416,7 @@ class _HistoryPreviewPanel extends StatelessWidget {
             children: [
               Icon(Icons.history, size: 16, color: ext.textMuted),
               const SizedBox(width: 8),
-              Text('ACTIVIDAD RECIENTE',
+                Text(l10n.dashboardRecentActivityTitle,
                   style: TextStyle(
                       color: ext.text,
                       fontSize: 13,
@@ -390,31 +427,41 @@ class _HistoryPreviewPanel extends StatelessWidget {
               TextButton.icon(
                 onPressed: () => context.go('/history'),
                 icon: const Icon(Icons.arrow_forward, size: 14),
-                label: const Text('VER HISTORIAL COMPLETO',
-                    style:
-                        TextStyle(fontFamily: 'JetBrainsMono', fontSize: 11)),
+                label: Text(l10n.dashboardViewFullHistory,
+                  style: const TextStyle(
+                    fontFamily: 'JetBrainsMono', fontSize: 11)),
               ),
             ],
           ),
           const SizedBox(height: 12),
           state.when(
-            loading: () => SizedBox(
-                height: 90,
-                child: Center(
-                    child: SizedBox(
-                        width: 20,
-                        height: 20,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: ext.primary)))),
+            loading: () => Column(
+              children: List.generate(
+                3,
+                (index) => Container(
+                  margin: EdgeInsets.only(bottom: index == 2 ? 0 : 8),
+                  height: 34,
+                  decoration: BoxDecoration(
+                    color: ext.surfaceVariant.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                )
+                    .animate(onPlay: (c) => c.repeat(reverse: true))
+                    .fade(
+                        begin: 0.45,
+                        end: 1,
+                        duration: (620 + (index * 70)).ms),
+              ),
+            ),
             error: (_, __) => Padding(
                 padding: const EdgeInsets.all(16),
-                child: Text('Error al cargar la actividad. Reintente.',
+              child: Text(l10n.dashboardHistoryLoadError,
                     style: TextStyle(color: ext.error, fontSize: 12))),
             data: (rows) {
               if (rows.isEmpty) {
                 return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 24),
-                    child: Text('Sin actividad reciente.',
+                child: Text(l10n.dashboardHistoryEmpty,
                         style: TextStyle(
                             color: ext.textMuted,
                             fontSize: 12,
@@ -542,7 +589,10 @@ class _HoverHistoryItemState extends State<HoverHistoryItem> {
 class _MetricsGrid extends StatelessWidget {
   final dynamic user;
   final Map<String, dynamic> data;
-  const _MetricsGrid({required this.user, required this.data});
+  final AppLocalizations l10n;
+
+  const _MetricsGrid(
+      {required this.user, required this.data, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -552,25 +602,25 @@ class _MetricsGrid extends StatelessWidget {
 
     final items = [
       (
-        label: 'SOLICITUDES USADAS',
+        label: l10n.dashboardMetricUsedRequests,
         value: '${data['used'] ?? 0}',
         icon: Icons.send_outlined,
         color: ext.warning
       ),
       (
-        label: 'DISPONIBLES',
+        label: l10n.dashboardMetricAvailable,
         value: '${data['available'] ?? user?.credits ?? 0}',
         icon: Icons.bolt_outlined,
         color: ext.success
       ),
       (
-        label: 'CRÃ‰DITOS SANDBOX',
+        label: l10n.dashboardMetricSandboxCredits,
         value: '${data['sandboxCredits'] ?? user?.sandboxCredits ?? 0}',
         icon: Icons.terminal_outlined,
         color: ext.accentAlt
       ),
       (
-        label: 'TOTAL SOLICITUDES',
+        label: l10n.dashboardMetricTotalRequests,
         value: '${data['total'] ?? 0}',
         icon: Icons.data_usage_outlined,
         color: ext.primary
@@ -606,7 +656,9 @@ class _MetricsGrid extends StatelessWidget {
 
 class _CreditsBar extends StatelessWidget {
   final dynamic user;
-  const _CreditsBar({required this.user});
+  final AppLocalizations l10n;
+
+  const _CreditsBar({required this.user, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -627,7 +679,7 @@ class _CreditsBar extends StatelessWidget {
               Icon(Icons.account_balance_wallet_outlined,
                   size: 16, color: ext.textMuted),
               const SizedBox(width: 8),
-              Text('RESERVA DE CRÃ‰DITOS: ',
+                Text(l10n.dashboardCreditsReserve,
                   style: TextStyle(
                       color: ext.textMuted,
                       fontSize: 12,
@@ -641,7 +693,7 @@ class _CreditsBar extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                     border:
                         Border.all(color: ext.primary.withValues(alpha: 0.3))),
-                child: Text(user?.plan?.toUpperCase() ?? 'FREE',
+                  child: Text(user?.plan?.toUpperCase() ?? l10n.dashboardFreeTier,
                     style: TextStyle(
                         color: ext.primary,
                         fontSize: 11,

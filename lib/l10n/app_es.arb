@@ -12,6 +12,7 @@
     "languageSystem": "Sistema",
     "languageSpanish": "Español",
     "languageEnglish": "English",
+    "languageIndonesian": "Indonesio",
     "layoutResponsiveTitle": "Diseño adaptativo",
     "layoutResponsiveSubtitle": "Optimizado para móvil, tablet y escritorio.",
     "commonRequired": "Obligatorio",
@@ -187,6 +188,58 @@
     "requestLogsLiveBadge": "LIVE",
     "requestLogsRefresh": "Actualizar",
     "requestLogsEmpty": "Ninguna solicitud aún",
+    "dashboardSubtitle": "Sistema central: Analíticas y consumo en línea // Bienvenido, {name}",
+    "dashboardMetricsLoadError": "No se pudieron cargar las métricas.",
+    "dashboardConsumptionStatusTitle": "ESTADO DEL CONSUMO",
+    "dashboardConsumptionCompactDescription": "Cuando necesites ampliar límites de solicitudes por segundo, compra un plan superior o recarga créditos desde Billing.",
+    "dashboardPurchasePlanCredits": "COMPRAR PLAN / CRÉDITOS",
+    "dashboardConsumptionSystemHealthTitle": "ESTADO DEL CONSUMO - SALUD DEL SISTEMA",
+    "dashboardConsumptionDesktopDescription": "El dashboard muestra la salud y actividad general. Billing aparece cuando decides comprar y ampliar cuotas.",
+    "dashboardPurchasePlan": "COMPRAR PLAN",
+    "dashboardRecentActivityTitle": "ACTIVIDAD RECIENTE",
+    "dashboardViewFullHistory": "VER HISTORIAL COMPLETO",
+    "dashboardHistoryLoadError": "Error al cargar la actividad. Reintenta.",
+    "dashboardHistoryEmpty": "Sin actividad reciente.",
+    "dashboardMetricUsedRequests": "SOLICITUDES USADAS",
+    "dashboardMetricAvailable": "DISPONIBLES",
+    "dashboardMetricSandboxCredits": "CRÉDITOS SANDBOX",
+    "dashboardMetricTotalRequests": "TOTAL SOLICITUDES",
+    "dashboardCreditsReserve": "RESERVA DE CRÉDITOS:",
+    "dashboardFreeTier": "GRATIS",
+    "billingTitle": "billing // marketplace",
+    "billingSubtitle": "Adquiere y gestiona tus créditos de Hub.Aura",
+    "billingTransparentPurchaseTitle": "COMPRA DE CRÉDITOS TRANSPARENTE",
+    "billingTransparentPurchaseDescription": "Conoce el coste exacto por crédito y obtén estimaciones precisas para que elijas libremente entre paquetes o cantidades a medida. Sin compromisos ocultos.",
+    "billingOnlineBalance": "BALANCE EN LÍNEA",
+    "billingAvailableRequests": "{count} solicitudes disponibles",
+    "billingPlanTypeLabel": "TIPO DE PLAN: {plan}",
+    "billingStandardPackages": "PAQUETES ESTANDARIZADOS",
+    "billingPlansLoadError": "No pudimos recuperar los planes",
+    "billingCustomVolume": "VOLUMEN A MEDIDA",
+    "billingCustomAmount": "CANTIDAD PERSONALIZADA",
+    "billingCustomHintExample": "Ej: 750",
+    "billingRawEstimate": "Estimación en bruto: aprox. ${amount} USD",
+    "billingSelectPackageError": "Selecciona un paquete o ingresa créditos personalizados",
+    "billingNoPaymentUrlError": "Pago iniciado, pero no se recibió URL de pago",
+    "billingGeneratePaymentError": "No se pudo generar el pago",
+    "billingConnectionPaymentError": "Error de conexión al generar el pago",
+    "billingActiveGatewayTitle": "PASARELA ACTIVA // CRYPTOMUS",
+    "billingGeneratedEncryptedUrl": "URL GENERADA Y CIFRADA:",
+    "billingRedirectToPayment": "REDIRECCIONAR A PAGO",
+    "billingGeneratingOrder": "GENERANDO ORDEN...",
+    "billingProcessCryptoPayment": "PROCESAR PAGO CRIPTOGRÁFICO",
+    "billingSecureTransactionsFooter": "Transacciones aseguradas vía Cryptomus. Comisiones ultrabajas. Sin almacenamiento de tarjetas.",
+    "billingBestValue": "MEJOR VALOR",
+    "billingUnitPrice": "aprox. ${value} / unidad",
+    "billingUnlimited": "ILIMITADO",
+    "billingCredits": "{count} CRÉDITOS",
+    "billingPlanUseCaseIntensive": "Ideal para equipos con uso intensivo diario.",
+    "billingPlanUseCasePersonal": "Ideal para pruebas y proyectos personales.",
+    "billingPlanUseCaseSmallTeams": "Ideal para side-projects y equipos pequeños.",
+    "billingPlanUseCaseProduction": "Ideal para producción y cargas frecuentes.",
+    "billingPlanRequestsName": "{count} solicitudes",
+    "billingPlanWeeklyUnlimited": "Semanal ilimitado",
+    "billingPopularBadge": "Popular",
     "settingsPageSubtitle": "Configuración interactiva del sistema",
     "settingsOperatorProfileTitle": "Perfil de operador",
     "settingsEmailVerified": "ESTADO: VERIFICADO",
@@ -208,6 +261,9 @@
     "settingsProfileSaved": "Perfil actualizado correctamente en la red.",
     "settingsProfileSaveError": "Fallo de integridad de datos.",
     "settingsProfileTimeout": "ERR_CONNECTION: Timeout operando perfil.",
+    "settingsUploadPhoto": "SUBIR FOTO",
+    "settingsAvatarUploaded": "Avatar subido correctamente.",
+    "settingsAvatarUploadError": "No se pudo subir el avatar.",
     "@appTitle": {
         "description": "El título de la aplicación"
     },
@@ -302,6 +358,41 @@
     "@historyCredit": {
         "placeholders": {
             "value": {}
+        }
+    },
+    "@dashboardSubtitle": {
+        "placeholders": {
+            "name": {}
+        }
+    },
+    "@billingAvailableRequests": {
+        "placeholders": {
+            "count": {}
+        }
+    },
+    "@billingPlanTypeLabel": {
+        "placeholders": {
+            "plan": {}
+        }
+    },
+    "@billingRawEstimate": {
+        "placeholders": {
+            "amount": {}
+        }
+    },
+    "@billingUnitPrice": {
+        "placeholders": {
+            "value": {}
+        }
+    },
+    "@billingCredits": {
+        "placeholders": {
+            "count": {}
+        }
+    },
+    "@billingPlanRequestsName": {
+        "placeholders": {
+            "count": {}
         }
     }
 }

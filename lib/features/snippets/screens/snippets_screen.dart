@@ -13,7 +13,6 @@ import 'package:hub_aura/l10n/app_localizations.dart';
 import 'package:code_text_field/code_text_field.dart';
 import 'package:highlight/languages/all.dart' as highlight_languages;
 
-import '../providers/snippets_provider.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/theme/theme_extension.dart';
 import '../../../core/ui/breakpoints.dart';
@@ -151,13 +150,179 @@ class SnippetsScreen extends ConsumerStatefulWidget {
 }
 
 class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
+  static const int _pageSize = 20;
+
   bool _showCreate = false;
   final _searchCtrl = TextEditingController();
+  final _scrollCtrl = ScrollController();
   String _languageFilter = 'all';
   bool _onlyProtected = false;
 
+  final List<Map<String, dynamic>> _snippets = [];
+  bool _initialLoading = true;
+  bool _loadingMore = false;
+  bool _refreshing = false;
+  String? _loadError;
+  int _page = 1;
+  int _pages = 1;
+  int _total = 0;
+
+  bool get _hasMore => _page < _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollCtrl.addListener(_onScroll);
+    _fetchSnippets(reset: true);
+  }
+
+  Future<void> _refreshFeed() => _fetchSnippets(reset: true);
+
+  void _onScroll() {
+    if (!_scrollCtrl.hasClients) return;
+    if (_scrollCtrl.position.extentAfter < 320) {
+      _fetchSnippets(loadMore: true);
+    }
+  }
+
+  List<Map<String, dynamic>> _extractItems(dynamic payload) {
+    if (payload is List) {
+      return payload
+          .whereType<Map>()
+          .map((row) => row.map((k, v) => MapEntry(k.toString(), v)))
+          .toList();
+    }
+    if (payload is Map && payload['items'] is List) {
+      final items = payload['items'] as List;
+      return items
+          .whereType<Map>()
+          .map((row) => row.map((k, v) => MapEntry(k.toString(), v)))
+          .toList();
+    }
+    return const <Map<String, dynamic>>[];
+  }
+
+  List<Map<String, dynamic>> _mergeByShortId(
+    List<Map<String, dynamic>> current,
+    List<Map<String, dynamic>> incoming,
+  ) {
+    final merged = <String, Map<String, dynamic>>{};
+    for (final row in current) {
+      final shortId = (row['shortId'] ?? '').toString();
+      if (shortId.isEmpty) continue;
+      merged[shortId] = row;
+    }
+    for (final row in incoming) {
+      final shortId = (row['shortId'] ?? '').toString();
+      if (shortId.isEmpty) continue;
+      merged[shortId] = row;
+    }
+    final out = merged.values.toList();
+    out.sort((a, b) {
+      final left = DateTime.tryParse((a['createdAt'] ?? '').toString()) ??
+          DateTime.fromMillisecondsSinceEpoch(0);
+      final right = DateTime.tryParse((b['createdAt'] ?? '').toString()) ??
+          DateTime.fromMillisecondsSinceEpoch(0);
+      return right.compareTo(left);
+    });
+    return out;
+  }
+
+  Future<void> _fetchSnippets({bool reset = false, bool loadMore = false}) async {
+    if (loadMore && (_initialLoading || _refreshing || _loadingMore || !_hasMore)) {
+      return;
+    }
+    if (reset && (_refreshing || _loadingMore)) {
+      return;
+    }
+
+    final targetPage = loadMore ? (_page + 1) : 1;
+    setState(() {
+      if (loadMore) {
+        _loadingMore = true;
+      } else if (_snippets.isEmpty) {
+        _initialLoading = true;
+      } else {
+        _refreshing = true;
+      }
+      _loadError = null;
+    });
+
+    try {
+      final res = await ApiClient.instance.get('/hub/snippets', params: {
+        'page': '$targetPage',
+        'limit': '$_pageSize',
+      });
+
+      if (res.data is Map && res.data['status'] == true) {
+        final payload = res.data['data'];
+        final items = _extractItems(payload);
+        final pagination = res.data['pagination'];
+
+        int nextTotal = items.length;
+        int nextPage = targetPage;
+        int nextPages = 1;
+
+        if (pagination is Map) {
+          nextTotal = int.tryParse('${pagination['total'] ?? items.length}') ??
+              items.length;
+          nextPage = int.tryParse('${pagination['page'] ?? targetPage}') ??
+              targetPage;
+          nextPages = int.tryParse('${pagination['pages'] ?? 1}') ?? 1;
+        }
+
+        final merged = loadMore ? _mergeByShortId(_snippets, items) : items;
+        if (!mounted) return;
+        setState(() {
+          _snippets
+            ..clear()
+            ..addAll(merged);
+          _total = nextTotal;
+          _page = nextPage;
+          _pages = nextPages < 1 ? 1 : nextPages;
+          _initialLoading = false;
+          _loadingMore = false;
+          _refreshing = false;
+          _loadError = null;
+        });
+        return;
+      }
+
+      final message =
+          (res.data is Map ? res.data['msg'] : null)?.toString() ??
+              'Failed to load snippets';
+      if (!mounted) return;
+      setState(() {
+        _initialLoading = false;
+        _loadingMore = false;
+        _refreshing = false;
+        _loadError = message;
+      });
+    } on DioException catch (e) {
+      final payload = e.response?.data;
+      final message = payload is Map ? payload['msg']?.toString() : null;
+      if (!mounted) return;
+      setState(() {
+        _initialLoading = false;
+        _loadingMore = false;
+        _refreshing = false;
+        _loadError = message ?? 'Connection error';
+      });
+    } catch (_) {
+      if (!mounted) return;
+      setState(() {
+        _initialLoading = false;
+        _loadingMore = false;
+        _refreshing = false;
+        _loadError = 'Failed to load snippets';
+      });
+    }
+  }
+
   @override
   void dispose() {
+    _scrollCtrl.removeListener(_onScroll);
+    _scrollCtrl.dispose();
     _searchCtrl.dispose();
     super.dispose();
   }
@@ -203,7 +368,6 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
   Widget build(BuildContext context) {
     final ext = AuralixThemeExtension.of(context);
     final l10n = AppLocalizations.of(context)!;
-    final snippets = ref.watch(snippetsProvider);
     final compact = context.isMobile;
 
     return Scaffold(
@@ -238,14 +402,19 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
           Center(
             child: ConstrainedBox(
               constraints: BoxConstraints(maxWidth: context.pageMaxWidth),
-              child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(context.pageHorizontalPadding, 20,
-                    context.pageHorizontalPadding, 24),
-                child: TerminalPageReveal(
-                  animationKey: 'snippets-screen',
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+              child: RefreshIndicator(
+                color: ext.primary,
+                onRefresh: _refreshFeed,
+                child: SingleChildScrollView(
+                  controller: _scrollCtrl,
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: EdgeInsets.fromLTRB(context.pageHorizontalPadding, 20,
+                      context.pageHorizontalPadding, 24),
+                  child: TerminalPageReveal(
+                    animationKey: 'snippets-screen',
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                       TerminalPageHeader(
                         title: l10n.navSnippets.toLowerCase(),
                         subtitle: l10n.snippetsSubtitle,
@@ -288,7 +457,7 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
                         _CreateSnippetCard(
                           onCreated: () {
                             setState(() => _showCreate = false);
-                            ref.invalidate(snippetsProvider);
+                            _refreshFeed();
                           },
                         ).animate().fadeIn().slideY(begin: -0.1),
                         const SizedBox(height: 24),
@@ -303,134 +472,213 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
                             alignment: Alignment.topCenter,
                             children: <Widget>[...prev].followedBy(
                                 <Widget>[if (curr != null) curr]).toList()),
-                        child: snippets.when(
-                          loading: () => SizedBox(
-                            key: const ValueKey('snippets-loading'),
-                            height: 180,
-                            child: Center(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  CircularProgressIndicator(
-                                      color: ext.primary, strokeWidth: 2),
-                                  const SizedBox(height: 16),
-                                  TypewriterText(
-                                      text: l10n.snippetsLoadingFragments,
-                                      style: TextStyle(
-                                          color: ext.primary,
-                                          fontFamily: 'JetBrainsMono',
-                                          fontSize: 12)),
-                                ],
-                              ),
-                            ),
-                          ),
-                          error: (_, __) => SizedBox(
-                            key: const ValueKey('snippets-error'),
-                            height: 120,
-                            child: Center(
-                              child: Text(l10n.snippetsFetchError,
-                                  style: TextStyle(
-                                      color: ext.error,
-                                      fontFamily: 'JetBrainsMono',
-                                      fontWeight: FontWeight.bold)),
-                            ),
-                          ),
-                          data: (list) {
-                            final filtered = _applyFilters(list);
-                            if (list.isEmpty) {
-                              return SizedBox(
-                                key: const ValueKey('snippets-empty-all'),
-                                height: 180,
-                                child: Center(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Icon(Icons.code_off,
-                                          size: 48,
-                                          color: ext.textMuted
-                                              .withValues(alpha: 0.2)),
-                                      const SizedBox(height: 16),
-                                      Text(l10n.snippetsEmptyAll,
-                                          style: TextStyle(
-                                              color: ext.textMuted,
-                                              fontFamily: 'JetBrainsMono',
-                                              fontWeight: FontWeight.bold)),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            }
-                            if (filtered.isEmpty) {
-                              return SizedBox(
-                                key: const ValueKey('snippets-empty-filtered'),
-                                height: 120,
-                                child: Center(
-                                  child: Text(l10n.snippetsEmptyFiltered,
-                                      style: TextStyle(
-                                          color: ext.textMuted,
-                                          fontFamily: 'JetBrainsMono')),
-                                ),
-                              );
-                            }
-
-                            return Container(
-                              key: ValueKey('snippets-list-${filtered.length}'),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 12),
-                                    child: Row(
-                                      children: [
-                                        Container(
-                                            width: 4,
-                                            height: 4,
-                                            decoration: BoxDecoration(
-                                                color: ext.primary,
-                                                shape: BoxShape.circle)),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          l10n.snippetsYieldSummary(
-                                              filtered.length, list.length),
-                                          style: TextStyle(
-                                              color: ext.textMuted,
-                                              fontSize: 11,
-                                              fontFamily: 'JetBrainsMono',
-                                              fontWeight: FontWeight.bold,
-                                              letterSpacing: 1.0),
-                                        ),
-                                      ],
+                        child: _initialLoading && _snippets.isEmpty
+                            ? _SnippetsFeedSkeleton(ext: ext, l10n: l10n)
+                            : _loadError != null && _snippets.isEmpty
+                                ? SizedBox(
+                                    key: const ValueKey('snippets-error'),
+                                    height: 160,
+                                    child: Center(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Text(
+                                            _loadError ?? l10n.snippetsFetchError,
+                                            style: TextStyle(
+                                                color: ext.error,
+                                                fontFamily: 'JetBrainsMono',
+                                                fontWeight: FontWeight.bold),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          const SizedBox(height: 10),
+                                          TextButton(
+                                            onPressed: _refreshFeed,
+                                            child: Text(l10n.commonRetry),
+                                          ),
+                                        ],
+                                      ),
                                     ),
+                                  )
+                                : Container(
+                                    key: ValueKey(
+                                    'snippets-list-${_snippets.length}-$_page-${_loadingMore ? 1 : 0}'),
+                                    child: Builder(builder: (_) {
+                                      final filtered = _applyFilters(_snippets);
+                                      if (_snippets.isEmpty) {
+                                        return SizedBox(
+                                          key: const ValueKey(
+                                              'snippets-empty-all'),
+                                          height: 180,
+                                          child: Center(
+                                            child: Column(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(Icons.code_off,
+                                                    size: 48,
+                                                    color: ext.textMuted
+                                                        .withValues(alpha: 0.2)),
+                                                const SizedBox(height: 16),
+                                                Text(l10n.snippetsEmptyAll,
+                                                    style: TextStyle(
+                                                        color: ext.textMuted,
+                                                        fontFamily:
+                                                            'JetBrainsMono',
+                                                        fontWeight:
+                                                            FontWeight.bold)),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      }
+
+                                      if (filtered.isEmpty) {
+                                        return SizedBox(
+                                          key: const ValueKey(
+                                              'snippets-empty-filtered'),
+                                          height: 120,
+                                          child: Center(
+                                            child: Text(
+                                                l10n.snippetsEmptyFiltered,
+                                                style: TextStyle(
+                                                    color: ext.textMuted,
+                                                    fontFamily:
+                                                        'JetBrainsMono')),
+                                          ),
+                                        );
+                                      }
+
+                                      final summaryTotal =
+                                          _total > 0 ? _total : _snippets.length;
+                                      return Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          if (_refreshing)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  bottom: 12),
+                                              child: LinearProgressIndicator(
+                                                minHeight: 2,
+                                                color: ext.primary,
+                                                backgroundColor: ext.border,
+                                              ),
+                                            ),
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(bottom: 12),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                    width: 4,
+                                                    height: 4,
+                                                    decoration: BoxDecoration(
+                                                        color: ext.primary,
+                                                        shape:
+                                                            BoxShape.circle)),
+                                                const SizedBox(width: 8),
+                                                Text(
+                                                  l10n.snippetsYieldSummary(
+                                                      filtered.length,
+                                                      summaryTotal),
+                                                  style: TextStyle(
+                                                      color: ext.textMuted,
+                                                      fontSize: 11,
+                                                      fontFamily:
+                                                          'JetBrainsMono',
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      letterSpacing: 1.0),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          ListView.separated(
+                                            itemCount: filtered.length,
+                                            shrinkWrap: true,
+                                            physics:
+                                                const NeverScrollableScrollPhysics(),
+                                            separatorBuilder: (_, __) =>
+                                                const SizedBox(height: 12),
+                                            itemBuilder: (_, i) => _SnippetTile(
+                                                    snippet: filtered[i],
+                                                    key: ValueKey(
+                                                        filtered[i]['shortId']),
+                                                    onUpdated: _refreshFeed)
+                                                .animate()
+                                                .fadeIn(delay: (i * 50).ms)
+                                                .slideX(begin: 0.05),
+                                          ),
+                                          if (_loadingMore)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 14, bottom: 8),
+                                              child: Center(
+                                                child: SizedBox(
+                                                  height: 18,
+                                                  width: 18,
+                                                  child:
+                                                      CircularProgressIndicator(
+                                                    strokeWidth: 2,
+                                                    color: ext.primary,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                        ],
+                                      );
+                                    }),
                                   ),
-                                  ListView.separated(
-                                    itemCount: filtered.length,
-                                    shrinkWrap: true,
-                                    physics:
-                                        const NeverScrollableScrollPhysics(),
-                                    separatorBuilder: (_, __) =>
-                                        const SizedBox(height: 12),
-                                    itemBuilder: (_, i) =>
-                                        _SnippetTile(
-                                                snippet: filtered[i],
-                                                key: ValueKey(
-                                                    filtered[i]['shortId']),
-                                                onUpdated: () => ref.invalidate(
-                                                    snippetsProvider))
-                                            .animate()
-                                            .fadeIn(delay: (i * 50).ms)
-                                            .slideX(begin: 0.05),
-                                  ),
-                                ],
-                              ),
-                            );
-                          },
-                        ),
                       ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SnippetsFeedSkeleton extends StatelessWidget {
+  final AuralixThemeExtension ext;
+  final AppLocalizations l10n;
+
+  const _SnippetsFeedSkeleton({required this.ext, required this.l10n});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      key: const ValueKey('snippets-loading'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(bottom: 14),
+            child: TypewriterText(
+              text: l10n.snippetsLoadingFragments,
+              style: TextStyle(
+                color: ext.primary,
+                fontFamily: 'JetBrainsMono',
+                fontSize: 12,
+              ),
+            ),
+          ),
+          ...List.generate(
+            4,
+            (index) => Container(
+              margin: EdgeInsets.only(bottom: index == 3 ? 0 : 12),
+              height: 98,
+              decoration: BoxDecoration(
+                color: ext.surface,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: ext.border),
+              ),
+            )
+                .animate(onPlay: (c) => c.repeat(reverse: true))
+                .fade(begin: 0.45, end: 1, duration: (700 + (index * 80)).ms),
           ),
         ],
       ),

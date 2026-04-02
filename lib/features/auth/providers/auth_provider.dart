@@ -30,6 +30,11 @@ class AuthNotifier extends AsyncNotifier<HubUser?> {
 
   @override
   Future<HubUser?> build() async {
+    _api.setUnauthorizedHandler(() async {
+      await _clearSession();
+    });
+    ref.onDispose(_api.clearUnauthorizedHandler);
+
     final prefs = await SharedPreferences.getInstance();
     final savedToken = prefs.getString(_tokenKey);
     if (savedToken != null && savedToken.trim().isNotEmpty) {
@@ -49,8 +54,7 @@ class AuthNotifier extends AsyncNotifier<HubUser?> {
       }
     } catch (_) {}
 
-    _api.clearToken();
-    await prefs.remove(_tokenKey);
+    await _clearSession(updateState: false);
     return null;
   }
 
@@ -119,6 +123,12 @@ class AuthNotifier extends AsyncNotifier<HubUser?> {
           } catch (_) {}
         }
 
+        if (user == null) {
+          await _clearSession();
+          return res.data['msg']?.toString() ??
+              'Registration failed: invalid user payload';
+        }
+
         state = AsyncData(user);
         return null;
       }
@@ -127,6 +137,22 @@ class AuthNotifier extends AsyncNotifier<HubUser?> {
     } on DioException catch (e) {
       state = const AsyncData(null);
       return e.response?.data['msg']?.toString() ?? 'Connection error';
+    } catch (_) {
+      state = const AsyncData(null);
+      return 'Registration failed';
+    }
+  }
+
+  Future<void> _clearSession({bool updateState = true}) async {
+    _api.clearToken();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_tokenKey);
+    if (updateState) {
+      try {
+        state = const AsyncData(null);
+      } catch (_) {
+        // Provider may be disposed while handling async unauthorized events.
+      }
     }
   }
 
@@ -135,9 +161,6 @@ class AuthNotifier extends AsyncNotifier<HubUser?> {
       await _api.post('/hub/auth/logout');
     } catch (_) {}
 
-    _api.clearToken();
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_tokenKey);
-    state = const AsyncData(null);
+    await _clearSession();
   }
 }

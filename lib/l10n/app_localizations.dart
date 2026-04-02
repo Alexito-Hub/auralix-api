@@ -7,6 +7,7 @@ import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_en.dart';
 import 'app_localizations_es.dart';
+import 'app_localizations_id.dart';
 
 // ignore_for_file: type=lint
 
@@ -95,7 +96,8 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
-    Locale('es')
+    Locale('es'),
+    Locale('id')
   ];
 
   /// El título de la aplicación
@@ -169,6 +171,12 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'English'**
   String get languageEnglish;
+
+  /// No description provided for @languageIndonesian.
+  ///
+  /// In es, this message translates to:
+  /// **'Indonesio'**
+  String get languageIndonesian;
 
   /// No description provided for @layoutResponsiveTitle.
   ///
@@ -1220,6 +1228,318 @@ abstract class AppLocalizations {
   /// **'Ninguna solicitud aún'**
   String get requestLogsEmpty;
 
+  /// No description provided for @dashboardSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Sistema central: Analíticas y consumo en línea // Bienvenido, {name}'**
+  String dashboardSubtitle(Object name);
+
+  /// No description provided for @dashboardMetricsLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudieron cargar las métricas.'**
+  String get dashboardMetricsLoadError;
+
+  /// No description provided for @dashboardConsumptionStatusTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'ESTADO DEL CONSUMO'**
+  String get dashboardConsumptionStatusTitle;
+
+  /// No description provided for @dashboardConsumptionCompactDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Cuando necesites ampliar límites de solicitudes por segundo, compra un plan superior o recarga créditos desde Billing.'**
+  String get dashboardConsumptionCompactDescription;
+
+  /// No description provided for @dashboardPurchasePlanCredits.
+  ///
+  /// In es, this message translates to:
+  /// **'COMPRAR PLAN / CRÉDITOS'**
+  String get dashboardPurchasePlanCredits;
+
+  /// No description provided for @dashboardConsumptionSystemHealthTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'ESTADO DEL CONSUMO - SALUD DEL SISTEMA'**
+  String get dashboardConsumptionSystemHealthTitle;
+
+  /// No description provided for @dashboardConsumptionDesktopDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'El dashboard muestra la salud y actividad general. Billing aparece cuando decides comprar y ampliar cuotas.'**
+  String get dashboardConsumptionDesktopDescription;
+
+  /// No description provided for @dashboardPurchasePlan.
+  ///
+  /// In es, this message translates to:
+  /// **'COMPRAR PLAN'**
+  String get dashboardPurchasePlan;
+
+  /// No description provided for @dashboardRecentActivityTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'ACTIVIDAD RECIENTE'**
+  String get dashboardRecentActivityTitle;
+
+  /// No description provided for @dashboardViewFullHistory.
+  ///
+  /// In es, this message translates to:
+  /// **'VER HISTORIAL COMPLETO'**
+  String get dashboardViewFullHistory;
+
+  /// No description provided for @dashboardHistoryLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error al cargar la actividad. Reintenta.'**
+  String get dashboardHistoryLoadError;
+
+  /// No description provided for @dashboardHistoryEmpty.
+  ///
+  /// In es, this message translates to:
+  /// **'Sin actividad reciente.'**
+  String get dashboardHistoryEmpty;
+
+  /// No description provided for @dashboardMetricUsedRequests.
+  ///
+  /// In es, this message translates to:
+  /// **'SOLICITUDES USADAS'**
+  String get dashboardMetricUsedRequests;
+
+  /// No description provided for @dashboardMetricAvailable.
+  ///
+  /// In es, this message translates to:
+  /// **'DISPONIBLES'**
+  String get dashboardMetricAvailable;
+
+  /// No description provided for @dashboardMetricSandboxCredits.
+  ///
+  /// In es, this message translates to:
+  /// **'CRÉDITOS SANDBOX'**
+  String get dashboardMetricSandboxCredits;
+
+  /// No description provided for @dashboardMetricTotalRequests.
+  ///
+  /// In es, this message translates to:
+  /// **'TOTAL SOLICITUDES'**
+  String get dashboardMetricTotalRequests;
+
+  /// No description provided for @dashboardCreditsReserve.
+  ///
+  /// In es, this message translates to:
+  /// **'RESERVA DE CRÉDITOS:'**
+  String get dashboardCreditsReserve;
+
+  /// No description provided for @dashboardFreeTier.
+  ///
+  /// In es, this message translates to:
+  /// **'GRATIS'**
+  String get dashboardFreeTier;
+
+  /// No description provided for @billingTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'billing // marketplace'**
+  String get billingTitle;
+
+  /// No description provided for @billingSubtitle.
+  ///
+  /// In es, this message translates to:
+  /// **'Adquiere y gestiona tus créditos de Hub.Aura'**
+  String get billingSubtitle;
+
+  /// No description provided for @billingTransparentPurchaseTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'COMPRA DE CRÉDITOS TRANSPARENTE'**
+  String get billingTransparentPurchaseTitle;
+
+  /// No description provided for @billingTransparentPurchaseDescription.
+  ///
+  /// In es, this message translates to:
+  /// **'Conoce el coste exacto por crédito y obtén estimaciones precisas para que elijas libremente entre paquetes o cantidades a medida. Sin compromisos ocultos.'**
+  String get billingTransparentPurchaseDescription;
+
+  /// No description provided for @billingOnlineBalance.
+  ///
+  /// In es, this message translates to:
+  /// **'BALANCE EN LÍNEA'**
+  String get billingOnlineBalance;
+
+  /// No description provided for @billingAvailableRequests.
+  ///
+  /// In es, this message translates to:
+  /// **'{count} solicitudes disponibles'**
+  String billingAvailableRequests(Object count);
+
+  /// No description provided for @billingPlanTypeLabel.
+  ///
+  /// In es, this message translates to:
+  /// **'TIPO DE PLAN: {plan}'**
+  String billingPlanTypeLabel(Object plan);
+
+  /// No description provided for @billingStandardPackages.
+  ///
+  /// In es, this message translates to:
+  /// **'PAQUETES ESTANDARIZADOS'**
+  String get billingStandardPackages;
+
+  /// No description provided for @billingPlansLoadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No pudimos recuperar los planes'**
+  String get billingPlansLoadError;
+
+  /// No description provided for @billingCustomVolume.
+  ///
+  /// In es, this message translates to:
+  /// **'VOLUMEN A MEDIDA'**
+  String get billingCustomVolume;
+
+  /// No description provided for @billingCustomAmount.
+  ///
+  /// In es, this message translates to:
+  /// **'CANTIDAD PERSONALIZADA'**
+  String get billingCustomAmount;
+
+  /// No description provided for @billingCustomHintExample.
+  ///
+  /// In es, this message translates to:
+  /// **'Ej: 750'**
+  String get billingCustomHintExample;
+
+  /// No description provided for @billingRawEstimate.
+  ///
+  /// In es, this message translates to:
+  /// **'Estimación en bruto: aprox. \${amount} USD'**
+  String billingRawEstimate(Object amount);
+
+  /// No description provided for @billingSelectPackageError.
+  ///
+  /// In es, this message translates to:
+  /// **'Selecciona un paquete o ingresa créditos personalizados'**
+  String get billingSelectPackageError;
+
+  /// No description provided for @billingNoPaymentUrlError.
+  ///
+  /// In es, this message translates to:
+  /// **'Pago iniciado, pero no se recibió URL de pago'**
+  String get billingNoPaymentUrlError;
+
+  /// No description provided for @billingGeneratePaymentError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo generar el pago'**
+  String get billingGeneratePaymentError;
+
+  /// No description provided for @billingConnectionPaymentError.
+  ///
+  /// In es, this message translates to:
+  /// **'Error de conexión al generar el pago'**
+  String get billingConnectionPaymentError;
+
+  /// No description provided for @billingActiveGatewayTitle.
+  ///
+  /// In es, this message translates to:
+  /// **'PASARELA ACTIVA // CRYPTOMUS'**
+  String get billingActiveGatewayTitle;
+
+  /// No description provided for @billingGeneratedEncryptedUrl.
+  ///
+  /// In es, this message translates to:
+  /// **'URL GENERADA Y CIFRADA:'**
+  String get billingGeneratedEncryptedUrl;
+
+  /// No description provided for @billingRedirectToPayment.
+  ///
+  /// In es, this message translates to:
+  /// **'REDIRECCIONAR A PAGO'**
+  String get billingRedirectToPayment;
+
+  /// No description provided for @billingGeneratingOrder.
+  ///
+  /// In es, this message translates to:
+  /// **'GENERANDO ORDEN...'**
+  String get billingGeneratingOrder;
+
+  /// No description provided for @billingProcessCryptoPayment.
+  ///
+  /// In es, this message translates to:
+  /// **'PROCESAR PAGO CRIPTOGRÁFICO'**
+  String get billingProcessCryptoPayment;
+
+  /// No description provided for @billingSecureTransactionsFooter.
+  ///
+  /// In es, this message translates to:
+  /// **'Transacciones aseguradas vía Cryptomus. Comisiones ultrabajas. Sin almacenamiento de tarjetas.'**
+  String get billingSecureTransactionsFooter;
+
+  /// No description provided for @billingBestValue.
+  ///
+  /// In es, this message translates to:
+  /// **'MEJOR VALOR'**
+  String get billingBestValue;
+
+  /// No description provided for @billingUnitPrice.
+  ///
+  /// In es, this message translates to:
+  /// **'aprox. \${value} / unidad'**
+  String billingUnitPrice(Object value);
+
+  /// No description provided for @billingUnlimited.
+  ///
+  /// In es, this message translates to:
+  /// **'ILIMITADO'**
+  String get billingUnlimited;
+
+  /// No description provided for @billingCredits.
+  ///
+  /// In es, this message translates to:
+  /// **'{count} CRÉDITOS'**
+  String billingCredits(Object count);
+
+  /// No description provided for @billingPlanUseCaseIntensive.
+  ///
+  /// In es, this message translates to:
+  /// **'Ideal para equipos con uso intensivo diario.'**
+  String get billingPlanUseCaseIntensive;
+
+  /// No description provided for @billingPlanUseCasePersonal.
+  ///
+  /// In es, this message translates to:
+  /// **'Ideal para pruebas y proyectos personales.'**
+  String get billingPlanUseCasePersonal;
+
+  /// No description provided for @billingPlanUseCaseSmallTeams.
+  ///
+  /// In es, this message translates to:
+  /// **'Ideal para side-projects y equipos pequeños.'**
+  String get billingPlanUseCaseSmallTeams;
+
+  /// No description provided for @billingPlanUseCaseProduction.
+  ///
+  /// In es, this message translates to:
+  /// **'Ideal para producción y cargas frecuentes.'**
+  String get billingPlanUseCaseProduction;
+
+  /// No description provided for @billingPlanRequestsName.
+  ///
+  /// In es, this message translates to:
+  /// **'{count} solicitudes'**
+  String billingPlanRequestsName(Object count);
+
+  /// No description provided for @billingPlanWeeklyUnlimited.
+  ///
+  /// In es, this message translates to:
+  /// **'Semanal ilimitado'**
+  String get billingPlanWeeklyUnlimited;
+
+  /// No description provided for @billingPopularBadge.
+  ///
+  /// In es, this message translates to:
+  /// **'Popular'**
+  String get billingPopularBadge;
+
   /// No description provided for @settingsPageSubtitle.
   ///
   /// In es, this message translates to:
@@ -1345,6 +1665,24 @@ abstract class AppLocalizations {
   /// In es, this message translates to:
   /// **'ERR_CONNECTION: Timeout operando perfil.'**
   String get settingsProfileTimeout;
+
+  /// No description provided for @settingsUploadPhoto.
+  ///
+  /// In es, this message translates to:
+  /// **'SUBIR FOTO'**
+  String get settingsUploadPhoto;
+
+  /// No description provided for @settingsAvatarUploaded.
+  ///
+  /// In es, this message translates to:
+  /// **'Avatar subido correctamente.'**
+  String get settingsAvatarUploaded;
+
+  /// No description provided for @settingsAvatarUploadError.
+  ///
+  /// In es, this message translates to:
+  /// **'No se pudo subir el avatar.'**
+  String get settingsAvatarUploadError;
 }
 
 class _AppLocalizationsDelegate
@@ -1358,7 +1696,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en', 'es'].contains(locale.languageCode);
+      <String>['en', 'es', 'id'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -1371,6 +1709,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsEn();
     case 'es':
       return AppLocalizationsEs();
+    case 'id':
+      return AppLocalizationsId();
   }
 
   throw FlutterError(
