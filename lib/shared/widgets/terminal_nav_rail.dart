@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/theme_extension.dart';
 
@@ -7,14 +7,24 @@ class NavRailItem {
   final String label;
   final String path;
   final bool selected;
-  const NavRailItem({required this.icon, required this.label, required this.path, required this.selected});
+  const NavRailItem(
+      {required this.icon,
+      required this.label,
+      required this.path,
+      required this.selected});
 }
 
 class TerminalNavRail extends StatelessWidget {
   final List<NavRailItem> items;
   final void Function(String path) onTap;
+  final String footerLabel;
 
-  const TerminalNavRail({super.key, required this.items, required this.onTap});
+  const TerminalNavRail({
+    super.key,
+    required this.items,
+    required this.onTap,
+    this.footerLabel = '',
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -38,15 +48,24 @@ class TerminalNavRail extends StatelessWidget {
                     boxShadow: [BoxShadow(color: ext.glow, blurRadius: 10)],
                   ),
                   child: Center(
-                    child: Text('A', style: TextStyle(color: ext.primary, fontWeight: FontWeight.bold, fontSize: 18)),
+                    child: Text('A',
+                        style: TextStyle(
+                            color: ext.primary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18)),
                   ),
                 ),
                 const SizedBox(width: 10),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Auralix', style: TextStyle(color: ext.text, fontSize: 15, fontWeight: FontWeight.bold)),
-                    Text('Hub', style: TextStyle(color: ext.textMuted, fontSize: 12)),
+                    Text('Auralix',
+                        style: TextStyle(
+                            color: ext.text,
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold)),
+                    Text('Hub',
+                        style: TextStyle(color: ext.textMuted, fontSize: 12)),
                   ],
                 ),
               ],
@@ -59,15 +78,33 @@ class TerminalNavRail extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: Row(
               children: [
-                Text('~/', style: TextStyle(color: ext.terminalGreen, fontSize: 11)),
-                Text('navigate', style: TextStyle(color: ext.textMuted, fontSize: 11)),
+                Text('~/',
+                    style: TextStyle(color: ext.terminalGreen, fontSize: 11)),
+                Text('navigate',
+                    style: TextStyle(color: ext.textMuted, fontSize: 11)),
               ],
             ),
           ),
           const SizedBox(height: 4),
           // Nav items
-          ...items.map((item) => _NavRailTile(item: item, onTap: () => onTap(item.path))),
-          const Spacer(),
+          Expanded(
+            child: Scrollbar(
+              child: ListView.builder(
+                padding: const EdgeInsets.only(bottom: 8),
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  final item = items[index];
+                  return _NavRailTile(
+                    item: item,
+                    onTap: () => onTap(item.path),
+                  )
+                      .animate(delay: (index * 35).ms)
+                      .fadeIn(duration: 180.ms)
+                      .slideX(begin: -0.03, duration: 180.ms);
+                },
+              ),
+            ),
+          ),
           Divider(color: ext.border, height: 1),
           Padding(
             padding: const EdgeInsets.all(12),
@@ -75,7 +112,10 @@ class TerminalNavRail extends StatelessWidget {
               children: [
                 Icon(Icons.circle, size: 8, color: ext.success),
                 const SizedBox(width: 6),
-                Text('api.auralixpe.xyz', style: TextStyle(color: ext.textMuted, fontSize: 11)),
+                Text(
+                  footerLabel.trim().isEmpty ? 'backend activo' : footerLabel,
+                  style: TextStyle(color: ext.textMuted, fontSize: 11),
+                ),
               ],
             ),
           ),
@@ -105,16 +145,20 @@ class _NavRailTile extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           decoration: BoxDecoration(
-            color: selected ? ext.primary.withValues(alpha: 0.12) : Colors.transparent,
+            color: selected
+                ? ext.primary.withValues(alpha: 0.12)
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(6),
             border: Border.all(
-              color: selected ? ext.primary.withValues(alpha: 0.4) : Colors.transparent,
+              color: selected
+                  ? ext.primary.withValues(alpha: 0.4)
+                  : Colors.transparent,
             ),
           ),
           child: Row(
             children: [
               if (selected)
-                Text('▶ ', style: TextStyle(color: ext.primary, fontSize: 10))
+                Text('â–¶ ', style: TextStyle(color: ext.primary, fontSize: 10))
                     .animate(onPlay: (c) => c.repeat())
                     .fadeIn(duration: 600.ms)
                     .then()

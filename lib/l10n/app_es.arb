@@ -1,7 +1,307 @@
 {
     "@@locale": "es",
     "appTitle": "Auralix Hub",
+    "navDashboard": "Dashboard",
+    "navDocs": "Docs",
+    "navSandbox": "Sandbox",
+    "navSnippets": "Snippets",
+    "navHistory": "Historial",
+    "navBilling": "Billing",
+    "navSettings": "Ajustes",
+    "languageLabel": "Idioma",
+    "languageSystem": "Sistema",
+    "languageSpanish": "Español",
+    "languageEnglish": "English",
+    "layoutResponsiveTitle": "Diseño adaptativo",
+    "layoutResponsiveSubtitle": "Optimizado para móvil, tablet y escritorio.",
+    "commonRequired": "Obligatorio",
+    "authLoginModuleTitle": "Módulo de autenticación",
+    "authLoginSubtitle": "Ingresa tus credenciales para acceder al hub.",
+    "authCaptchaRequired": "Completa la verificación captcha.",
+    "authNoAccount": "¿No tienes cuenta?",
+    "authLogin": "Iniciar sesión",
+    "authRegister": "Registrarse",
+    "authTerms": "Términos",
+    "authPrivacy": "Privacidad",
+    "authAuthenticate": "Autenticar",
+    "authLoginCommand": "~/login.sh --execute",
+    "authEmailHint": "usuario@dominio.com",
+    "authEmailPrefix": "email:",
+    "authPasswordHint": "********",
+    "authPasswordPrefix": "pass:",
+    "authRegisterModuleTitle": "Provisionamiento de cuenta",
+    "authRegisterCompleteTitle": "Registro completado",
+    "authRegisterAccountCreated": "CUENTA CREADA",
+    "authRegisterVerifyEmailMessage": "Verifica tu correo en:\n{email}",
+    "authProceedToLogin": "IR A INICIAR SESIÓN",
+    "authRegisterSubtitle": "Las nuevas cuentas reciben 20 solicitudes gratis y 10 límites de sandbox.",
+    "authInvalidEmail": "Correo inválido",
+    "authRegisterPasswordHint": "mínimo 8 caracteres",
+    "authMin8Chars": "Mínimo 8 caracteres",
+    "authRegisterConfirmPasswordHint": "repite la contraseña",
+    "authRegisterConfirmPrefix": "verificar:",
+    "authPasswordMismatch": "No coincide",
+    "authProvisionAccount": "PROVISIONAR CUENTA",
+    "authExistingUser": "¿YA TIENES USUARIO?",
+    "authRegisterCommand": "$ ./provision_user.sh",
+    "authVerifyTitle": "Verificación de identidad",
+    "authVerifyChecking": "VERIFICANDO FIRMA...",
+    "authVerifySuccessCode": "VERIFICACIÓN EXITOSA_200",
+    "authVerifyErrorCode": "ERROR_DE_VERIFICACIÓN",
+    "authVerifySuccessMessage": "Identidad confirmada. Tu cuenta ya está activa.",
+    "authVerifyInvalidOrExpired": "El enlace es inválido o expiró.",
+    "authReturnToLogin": "VOLVER A INICIAR SESIÓN",
+    "authVerifyTokenMissing": "Token faltante o inválido.",
+    "authVerifyInvalidSignature": "Firma de token inválida.",
+    "authVerifyConnectionFailed": "Falló la conexión con la autoridad.",
+    "authVersionLabel": "AURALIX HUB v1.0.0-rc",
+    "authSecureAccessStatus": "ACCESO_SEGURO",
+    "authCaptchaEnabledStatus": "CAPTCHA_ACTIVO",
+    "authSplashVersionLine": "Hub v1.0.0 - {authority}",
+    "authSplashCoreReady": "Servicios principales inicializados",
+    "authSplashSocketReady": "WebSocket listo y escuchando",
+    "authSplashWaitingAuth": "Esperando autenticación...",
+    "authSplashStartCommand": "$ auth_subsystem --start",
+    "captchaLoadFailed": "No se pudo cargar el captcha",
+    "captchaValidationFailed": "No se pudo validar el captcha",
+    "captchaIncorrectAnswer": "Respuesta incorrecta",
+    "captchaTryAgain": "Error al verificar. Intenta de nuevo.",
+    "captchaVerified": "Captcha verificado [OK]",
+    "captchaSecurityVerification": "Verificación de seguridad",
+    "captchaUnavailable": "Captcha no disponible",
+    "captchaAnswerHint": "Respuesta",
+    "captchaVerify": "Verificar",
+    "captchaNew": "Nuevo captcha",
+    "commonRetry": "Reintentar",
+    "commonConnectionError": "Error de conexión",
+    "routerNotFoundTitle": "Ruta no encontrada",
+    "routerUnknownError": "Error desconocido del router",
+    "routerGoHome": "Ir al inicio",
+    "routerOpenDashboard": "Abrir dashboard",
+    "settingsLocaleAutoLabel": "Usar idioma del sistema cuando esté disponible.",
+    "appShellOpenNavigation": "Abrir navegación",
+    "appShellNoSession": "Sin sesión activa",
+    "appShellPlanLabel": "Plan",
+    "appShellLogout": "Cerrar sesión",
+    "snippetsAnyLanguage": "CUALQUIER_LENGUAJE",
+    "snippetsSubtitle": "Compartir fragmentos de código seguros P2P",
+    "snippetsLoadingFragments": "RECUPERANDO_FRAGMENTOS_DE_RED...",
+    "snippetsFetchError": "ERROR_CARGANDO_FRAGMENTOS",
+    "snippetsEmptyAll": "NO_SE_ENCONTRARON_FRAGMENTOS",
+    "snippetsEmptyFiltered": "NO_HAY_COINCIDENCIAS",
+    "snippetsYieldSummary": "RESULTADO: {current}/{total} FRAGMENTOS",
+    "snippetsCreateAbort": "CANCELAR",
+    "snippetsCreateNew": "NUEVO_FRAG",
+    "snippetsSearchHint": "BUSCAR EN BD...",
+    "snippetsSecureOnly": "SOLO_SEGUROS",
+    "snippetsResetFilters": "RESETEAR",
+    "snippetsUntitled": "FRAG_SIN_TITULO",
+    "snippetsEncrypted": "ENCRIPTADO",
+    "snippetsCopyUrl": "COPIAR_URL",
+    "snippetsCopyUrlSuccess": "URL GUARDADA EN PORTAPAPELES",
+    "snippetsValidationTitleCodeRequired": "SE_REQUIERE_TITULO_Y_CODIGO",
+    "snippetsNetworkTimeout": "TIMEOUT_DE_RED",
+    "snippetsCreateTitle": "SUBIR_NUEVO_FRAGMENTO",
+    "snippetsTitleHint": "ej. payload de bypass del servidor",
+    "snippetsTitlePrefix": "titulo:",
+    "snippetsLanguageOption": "lang: {language}",
+    "snippetsCodeHint": "// Inyecta payload aqui...",
+    "snippetsRequireDecryptionKey": "REQUERIR_LLAVE_DE_DESCIFRADO",
+    "snippetsEncryptionKeyHint": "llave de cifrado",
+    "snippetsEncryptionKeyPrefix": "clave:",
+    "snippetsExecute": "EJECUTAR",
+    "docsLoadErrorTitle": "No se pudo cargar la documentación técnica",
+    "docsNoApisTitle": "No hay APIs del proyecto en el catálogo",
+    "docsNoApisSubtitle": "El catálogo respondió, pero no se encontraron endpoints Hub. Revisa metadata project/category o rutas /hub/*.",
+    "docsServiceNotFoundTitle": "Servicio no encontrado en docs",
+    "docsServiceNotFoundSubtitle": "La ruta no coincide con un endpoint del proyecto Hub. Vuelve al índice de /docs.",
+    "docsIndexSubtitle": "Índice principal de APIs del proyecto Hub",
+    "docsServicesCount": "{count} servicios",
+    "docsSearchHint": "Buscar endpoint, método o tag",
+    "docsAllCategories": "Todas las categorías",
+    "docsNoResultsTitle": "Sin resultados para este filtro",
+    "docsNoResultsSubtitle": "Prueba otra categoría o limpia la búsqueda para ver todos los endpoints.",
+    "docsDetailsSubtitle": "Documentación técnica de {name}",
+    "docsIndexButton": "Índice",
+    "docsActiveServiceLabel": "servicio activo",
+    "docsOpenButton": "Abrir",
+    "docsAuthChip": "auth",
+    "docsSourceLabel": "fuente",
+    "docsCredentialsTitle": "Credenciales para este endpoint",
+    "docsRequiredHeadersSection": "Headers requeridos",
+    "docsContentTypeDescription": "Tipo de contenido enviado a la API",
+    "docsAuthorizationDescription": "Autenticación de la cuenta",
+    "docsParamsByLocationSection": "Parámetros por ubicación",
+    "docsNoExplicitParams": "Este servicio no define parámetros explícitos en metadata.",
+    "docsCodeExamplesSection": "Ejemplos de código",
+    "docsResponseSuccessSection": "Respuesta exitosa - 200 OK",
+    "docsStatusCodesSection": "Códigos de estado",
+    "docsTrySandboxWithSession": "Probar en Sandbox (requiere sesión activa)",
+    "docsTrySandbox": "Probar en Sandbox",
+    "docsRelatedServicesSection": "Servicios relacionados",
+    "docsRequiredBadge": "obligatorio",
+    "docsNoSnippetsMessage": "Este servicio aún no publica snippets reales. Inicia sesión y ejecuta pruebas en Sandbox para obtener respuestas reales.",
+    "docsCopyTooltip": "Copiar",
+    "docsCopyResponseTooltip": "Copiar respuesta",
+    "sandboxBootBanner": "Auralix Hub Sandbox v1.0",
+    "sandboxBootReady": "Sistema inicializado. Entorno listo.",
+    "sandboxPresetLoaded": "Preset cargado para {service} -> [{method} {path}]",
+    "sandboxHistoryRestored": "Snapshot restaurado: {method} {path}",
+    "sandboxPartialRestored": "Layout parcial restaurado: {method} {path}",
+    "sandboxMissingRequired": "Falta parametro obligatorio: {name}",
+    "sandboxRuntimeError": "Error de ejecucion: {error}",
+    "sandboxSubtitle": "Entorno de control iterativo y pruebas en memoria",
+    "sandboxLocalCredits": "{count} CREDITOS LOCALES",
+    "sandboxActiveCredentialsTitle": "Credenciales activas inyectadas",
+    "sandboxCatalogSelectionLabel": "SELECCION DE CATALOGO:",
+    "sandboxCustomHeadersToggle": "Cabeceras personalizadas",
+    "sandboxInjectedHeadersLabel": "HEADERS INYECTADOS",
+    "sandboxAddHeader": "AGREGAR NUEVO",
+    "sandboxHeaderKeyHint": "Clave",
+    "sandboxHeaderValueHint": "Valor",
+    "sandboxNoDeclaredParams": "> SIN PARAMETROS DECLARADOS EN LA FIRMA",
+    "sandboxPayloadVariables": "VARIABLES Y CUERPO [PAYLOAD]",
+    "sandboxExecuting": "EJECUTANDO",
+    "sandboxExecute": "EJECUTAR",
+    "sandboxRequiredBadge": "REQ",
+    "sandboxInsertPayloadHint": "Inserta payload para {name}",
+    "sandboxHistoryTitle": "HISTORIAL DE EJECUCIONES [LOCAL_STORAGE]",
+    "sandboxCachedCount": "{count} EN CACHE",
+    "sandboxStatusError": "ERR",
+    "historySubtitle": "Registro técnico de solicitudes y respuestas",
+    "historyRecordsInView": "{count} registros en esta vista",
+    "historyFilterAll": "todo",
+    "historyFilterSuccess": "éxito",
+    "historyFilterError": "error",
+    "historyFilterSandbox": "sandbox",
+    "historyNoRequestsInCategory": "No hay solicitudes en esta categoría",
+    "historyCredit": "Crédito: {value}",
+    "historyEnvironmentSandbox": "sandbox",
+    "historyEnvironmentProduction": "producción",
+    "historyColumnMethod": "MÉTODO",
+    "historyColumnStatus": "ESTADO",
+    "historyColumnEndpoint": "ENDPOINT",
+    "historyColumnTime": "TIEMPO",
+    "historyColumnCredit": "CRÉDITO",
+    "requestLogsLiveTitle": "logs en tiempo real",
+    "requestLogsLiveBadge": "LIVE",
+    "requestLogsRefresh": "Actualizar",
+    "requestLogsEmpty": "Ninguna solicitud aún",
+    "settingsPageSubtitle": "Configuración interactiva del sistema",
+    "settingsOperatorProfileTitle": "Perfil de operador",
+    "settingsEmailVerified": "ESTADO: VERIFICADO",
+    "settingsEmailNotVerified": "ESTADO: NO VERIFICADO",
+    "settingsPublicAlias": "IDENTIFICADOR PÚBLICO",
+    "settingsAliasHint": "Ingresa tu identificador (alias)",
+    "settingsAliasPrefix": "alias:",
+    "settingsUpdateProfile": "ACTUALIZAR DATOS",
+    "settingsThemeMatrixTitle": "Matriz visual [temas]",
+    "settingsThemeActive": "[ACTIVO]",
+    "settingsThemeInactive": "INACTIVO",
+    "settingsDesignTokensTitle": "Tokens de diseño",
+    "settingsApiCredentialsTitle": "Credenciales API",
+    "settingsSessionTokenPanelTitle": "Token de sesión interceptado",
+    "settingsCriticalDirectivesTitle": "Directivas críticas",
+    "settingsTerminateSessionTitle": "TERMINAR SESIÓN",
+    "settingsTerminateSessionDescription": "Cierra todos los accesos en el nodo actual y destruye el token en memoria.",
+    "settingsPurgeButton": "PURGAR",
+    "settingsProfileSaved": "Perfil actualizado correctamente en la red.",
+    "settingsProfileSaveError": "Fallo de integridad de datos.",
+    "settingsProfileTimeout": "ERR_CONNECTION: Timeout operando perfil.",
     "@appTitle": {
         "description": "El título de la aplicación"
+    },
+    "@navDashboard": {
+        "description": "Etiqueta de navegación para dashboard"
+    },
+    "@languageLabel": {
+        "description": "Título para selector de idioma"
+    },
+    "@authRegisterVerifyEmailMessage": {
+        "description": "Mensaje tras el registro indicando verificar el correo",
+        "placeholders": {
+            "email": {}
+        }
+    },
+    "@authSplashVersionLine": {
+        "description": "Línea de versión en el splash de terminal de auth",
+        "placeholders": {
+            "authority": {}
+        }
+    },
+    "@snippetsYieldSummary": {
+        "placeholders": {
+            "current": {},
+            "total": {}
+        }
+    },
+    "@snippetsLanguageOption": {
+        "placeholders": {
+            "language": {}
+        }
+    },
+    "@docsServicesCount": {
+        "placeholders": {
+            "count": {}
+        }
+    },
+    "@docsDetailsSubtitle": {
+        "placeholders": {
+            "name": {}
+        }
+    },
+    "@sandboxPresetLoaded": {
+        "placeholders": {
+            "service": {},
+            "method": {},
+            "path": {}
+        }
+    },
+    "@sandboxHistoryRestored": {
+        "placeholders": {
+            "method": {},
+            "path": {}
+        }
+    },
+    "@sandboxPartialRestored": {
+        "placeholders": {
+            "method": {},
+            "path": {}
+        }
+    },
+    "@sandboxMissingRequired": {
+        "placeholders": {
+            "name": {}
+        }
+    },
+    "@sandboxRuntimeError": {
+        "placeholders": {
+            "error": {}
+        }
+    },
+    "@sandboxLocalCredits": {
+        "placeholders": {
+            "count": {}
+        }
+    },
+    "@sandboxInsertPayloadHint": {
+        "placeholders": {
+            "name": {}
+        }
+    },
+    "@sandboxCachedCount": {
+        "placeholders": {
+            "count": {}
+        }
+    },
+    "@historyRecordsInView": {
+        "placeholders": {
+            "count": {}
+        }
+    },
+    "@historyCredit": {
+        "placeholders": {
+            "value": {}
+        }
     }
 }

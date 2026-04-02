@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:hub_aura/l10n/app_localizations.dart';
 import '../../../core/theme/theme_extension.dart';
 import '../../../core/network/api_client.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -37,15 +38,21 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
   }
 
   Future<void> _loadChallenge() async {
+    final l10n = AppLocalizations.of(context)!;
+
     if (!mounted) return;
     setState(() {
       _loading = true;
       _verified = false;
       _errorMsg = null;
+      _answerCtrl.clear();
     });
     try {
-      final res = await ApiClient.instance.post('/api/hub/captcha/challenge');
-      if (kDebugMode) debugPrint('captcha challenge response: ${res.statusCode} | ${res.data}');
+      final res = await ApiClient.instance.post('/hub/captcha/challenge');
+      if (kDebugMode) {
+        debugPrint(
+            'captcha challenge response: ${res.statusCode} | ${res.data}');
+      }
       if (res.data['status'] == true) {
         if (!mounted) return;
         setState(() {
@@ -56,7 +63,7 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
           _errorMsg = null;
         });
       } else {
-        final msg = res.data['msg'] ?? 'No se pudo cargar captcha';
+        final msg = res.data['msg'] ?? l10n.captchaLoadFailed;
         if (!mounted) return;
         setState(() {
           _challengeId = null;
@@ -75,33 +82,44 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
         _challengeId = null;
         _svgPayload = null;
         _loading = false;
-        _errorMsg = 'Error de conexión';
+        _errorMsg = l10n.commonConnectionError;
       });
     }
   }
 
   Future<void> _verify() async {
+    final l10n = AppLocalizations.of(context)!;
+
     if (_challengeId == null || _answerCtrl.text.isEmpty) return;
     if (!mounted) return;
     setState(() => _loading = true);
     try {
-      final res =
-          await ApiClient.instance.post('/api/hub/captcha/verify', data: {
+      final res = await ApiClient.instance.post('/hub/captcha/verify', data: {
         'challengeId': _challengeId,
         'answer': _answerCtrl.text.trim(),
       });
       if (res.data['status'] == true) {
         final data = res.data['data'] ?? {};
-        final token = data['token'] ?? data['challengeId'];
+        final rawToken = data['token'] ?? data['challengeId'];
+        final token = rawToken == null ? '' : rawToken.toString().trim();
+        if (token.isEmpty) {
+          if (!mounted) return;
+          setState(() {
+            _loading = false;
+            _errorMsg = l10n.captchaValidationFailed;
+          });
+          await _loadChallenge();
+          return;
+        }
         if (!mounted) return;
         setState(() {
           _verified = true;
           _loading = false;
           _errorMsg = null;
         });
-        widget.onVerified(token as String);
+        widget.onVerified(token);
       } else {
-        final msg = res.data['msg'] ?? 'Respuesta incorrecta';
+        final msg = res.data['msg'] ?? l10n.captchaIncorrectAnswer;
         _answerCtrl.clear();
         if (!mounted) return;
         setState(() {
@@ -114,7 +132,7 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
       if (!mounted) return;
       setState(() {
         _loading = false;
-        _errorMsg = 'Error al verificar. Intenta de nuevo.';
+        _errorMsg = l10n.captchaTryAgain;
       });
     }
   }
@@ -122,6 +140,7 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
   @override
   Widget build(BuildContext context) {
     final ext = AuralixThemeExtension.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     if (_verified) {
       return Container(
@@ -135,7 +154,7 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
           children: [
             Icon(Icons.verified_outlined, size: 16, color: ext.success),
             const SizedBox(width: 8),
-            Text('Captcha verificado [OK]',
+            Text(l10n.captchaVerified,
                 style: TextStyle(color: ext.success, fontSize: 12)),
           ],
         ),
@@ -161,7 +180,7 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
           : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Verificación de seguridad',
+                Text(l10n.captchaSecurityVerification,
                     style: TextStyle(color: ext.textMuted, fontSize: 11)),
                 const SizedBox(height: 8),
                 Container(
@@ -192,7 +211,7 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
                             SizedBox(
                                 height: 60,
                                 child: Center(
-                                    child: Text('Captcha no disponible',
+                                    child: Text(l10n.captchaUnavailable,
                                         style: TextStyle(
                                             color: ext.textMuted,
                                             fontSize: 12)))),
@@ -200,7 +219,7 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
                             TextButton.icon(
                               onPressed: _loadChallenge,
                               icon: const Icon(Icons.refresh, size: 16),
-                              label: const Text('Reintentar'),
+                              label: Text(l10n.commonRetry),
                             ),
                           ],
                         ),
@@ -216,7 +235,7 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
                         onFieldSubmitted: (_) => _verify(),
                         style: TextStyle(color: ext.text, fontSize: 14),
                         decoration: InputDecoration(
-                          hintText: 'Respuesta',
+                          hintText: l10n.captchaAnswerHint,
                           hintStyle:
                               TextStyle(color: ext.textMuted, fontSize: 14),
                           contentPadding: const EdgeInsets.symmetric(
@@ -243,13 +262,13 @@ class _CaptchaWidgetState extends State<CaptchaWidget> {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 14, vertical: 12)),
                       icon: const Icon(Icons.check, size: 16),
-                      label: const Text('Verificar'),
+                      label: Text(l10n.captchaVerify),
                     ),
                     const SizedBox(width: 4),
                     IconButton(
                       icon: Icon(Icons.refresh, size: 18, color: ext.textMuted),
                       onPressed: _loadChallenge,
-                      tooltip: 'Nuevo captcha',
+                      tooltip: l10n.captchaNew,
                     ),
                   ],
                 ),

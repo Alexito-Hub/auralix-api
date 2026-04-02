@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hub_aura/l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../../../shared/widgets/terminal_widgets.dart';
 import '../../../core/theme/theme_extension.dart';
@@ -20,6 +21,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
   String? _captchaToken;
+  int _captchaVersion = 0;
   String? _error;
   bool _loading = false;
   bool _showPass = false;
@@ -32,9 +34,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _submit() async {
+    final l10n = AppLocalizations.of(context)!;
+
     if (!_formKey.currentState!.validate()) return;
     if (_captchaToken == null) {
-      setState(() => _error = 'Por favor completa el captcha');
+      setState(() => _error = l10n.authCaptchaRequired);
       return;
     }
     setState(() {
@@ -47,58 +51,82 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           captchaToken: _captchaToken!,
         );
     if (mounted) {
-      setState(() {
-        _loading = false;
-        _error = err;
-      });
+      if (err != null) {
+        setState(() {
+          _loading = false;
+          _error = err;
+          // Refresh captcha on failure
+          _captchaToken = null;
+          _captchaVersion++;
+        });
+      } else {
+        setState(() => _loading = false);
+        context.go('/dashboard');
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final ext = AuralixThemeExtension.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return AuthLayout(
-      title: 'hub.auralixpe.xyz',
+      title: l10n.authLoginModuleTitle,
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Header
-            TypewriterText(
-              text: r'$ ssh user@auralix-hub',
-              style: TextStyle(
-                  color: ext.primary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold),
+            Row(
+              children: [
+                Icon(Icons.terminal, color: ext.primary, size: 20),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: TypewriterText(
+                    text: l10n.authLoginCommand,
+                    style: TextStyle(
+                      color: ext.primary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'JetBrainsMono',
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: 8),
-            Text('Inicia sesión en tu cuenta',
-                style: TextStyle(color: ext.textMuted, fontSize: 13)),
+            Text(
+              l10n.authLoginSubtitle,
+              style: TextStyle(
+                  color: ext.textMuted,
+                  fontSize: 13,
+                  fontFamily: 'JetBrainsMono'),
+            ),
             const SizedBox(height: 28),
 
-            // Email
+            // Email Input
             TerminalInput(
               controller: _emailCtrl,
-              hint: 'correo@ejemplo.com',
-              prefix: 'email:',
+              hint: l10n.authEmailHint,
+              prefix: l10n.authEmailPrefix,
               keyboardType: TextInputType.emailAddress,
               validator: (v) =>
-                  (v?.isEmpty ?? true) ? 'Ingresa tu correo' : null,
-            ),
-            const SizedBox(height: 12),
+                  (v?.isEmpty ?? true) ? l10n.commonRequired : null,
+            ).animate().fadeIn(delay: 100.ms).slideX(begin: 0.05),
+            const SizedBox(height: 16),
 
-            // Password
+            // Password Input
             Stack(
               children: [
                 TerminalInput(
                   controller: _passCtrl,
-                  hint: '••••••••',
-                  prefix: 'pass:',
+                  hint: l10n.authPasswordHint,
+                  prefix: l10n.authPasswordPrefix,
                   obscureText: !_showPass,
                   validator: (v) =>
-                      (v?.isEmpty ?? true) ? 'Ingresa tu contraseña' : null,
+                      (v?.isEmpty ?? true) ? l10n.commonRequired : null,
                 ),
                 Positioned(
                   right: 8,
@@ -113,85 +141,206 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   ),
                 ),
               ],
-            ),
-            const SizedBox(height: 16),
+            ).animate().fadeIn(delay: 200.ms).slideX(begin: 0.05),
+            const SizedBox(height: 24),
 
-            // Captcha
-            CaptchaWidget(
-                onVerified: (token) => setState(() => _captchaToken = token)),
-            const SizedBox(height: 16),
+            // Captcha Container
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: ext.border),
+                borderRadius: BorderRadius.circular(8),
+                color: ext.bg.withValues(alpha: 0.5),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: CaptchaWidget(
+                  key: ValueKey(_captchaVersion),
+                  onVerified: (token) => setState(() => _captchaToken = token),
+                ),
+              ),
+            )
+                .animate()
+                .fadeIn(delay: 300.ms)
+                .scale(begin: const Offset(0.95, 0.95)),
+            const SizedBox(height: 24),
 
-            // Error
+            // Error Display
             if (_error != null)
               Container(
-                padding: const EdgeInsets.all(10),
+                margin: const EdgeInsets.only(bottom: 24),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: ext.error.withValues(alpha: 0.1),
-                  border: Border.all(color: ext.error.withValues(alpha: 0.4)),
-                  borderRadius: BorderRadius.circular(6),
+                  border: Border(left: BorderSide(color: ext.error, width: 4)),
+                  borderRadius: BorderRadius.circular(4),
                 ),
                 child: Row(
                   children: [
-                    Icon(Icons.error_outline, size: 14, color: ext.error),
+                    Icon(Icons.warning_amber_rounded,
+                        size: 16, color: ext.error),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         _error!,
-                        style: TextStyle(color: ext.error, fontSize: 12),
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            color: ext.error,
+                            fontSize: 12,
+                            fontFamily: 'JetBrainsMono'),
                       ),
                     ),
                   ],
                 ),
               ).animate().fadeIn().slideY(begin: -0.1),
 
-            if (_error != null) const SizedBox(height: 12),
+            // Submit Action
+            _HoverLoginButton(
+              onPressed: _loading ? null : _submit,
+              loading: _loading,
+              ext: ext,
+              label: l10n.authAuthenticate,
+            ).animate().fadeIn(delay: 400.ms).slideY(begin: 0.1),
+            const SizedBox(height: 24),
 
-            // Submit
-            SizedBox(
-              height: 44,
-              child: ElevatedButton(
-                onPressed: _loading ? null : _submit,
-                child: _loading
-                    ? const SizedBox(
-                        height: 16,
-                        width: 16,
-                        child: CircularProgressIndicator(
-                            strokeWidth: 2, color: Colors.white),
-                      )
-                    : const Text('Iniciar sesión'),
-              ),
-            ),
-            const SizedBox(height: 16),
-
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+            // Footer Links
+            Wrap(
+              alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 8,
               children: [
-                Text('¿No tienes cuenta? ',
-                    style: TextStyle(color: ext.textMuted, fontSize: 13)),
-                TextButton(
-                  onPressed: () => context.go('/register'),
-                  child: const Text('Regístrate'),
+                Text(
+                  l10n.authNoAccount.toUpperCase(),
+                  style: TextStyle(
+                      color: ext.textMuted,
+                      fontSize: 11,
+                      fontFamily: 'JetBrainsMono'),
+                ),
+                InkWell(
+                  onHover: (v) {}, // Triggers basic mouse cursor change
+                  onTap: () => context.go('/register'),
+                  child: Text(
+                    '[ ${l10n.authRegister.toUpperCase()} ]',
+                    style: TextStyle(
+                        color: ext.accent,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'JetBrainsMono'),
+                  ),
                 ),
               ],
-            ),
+            ).animate().fadeIn(delay: 500.ms),
+            const SizedBox(height: 12),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                TextButton(
-                    onPressed: () => context.go('/terms'),
-                    child: Text('Términos',
-                        style: TextStyle(color: ext.textMuted, fontSize: 11))),
-                Text(' · ',
-                    style: TextStyle(color: ext.textMuted, fontSize: 11)),
-                TextButton(
-                    onPressed: () => context.go('/privacy'),
-                    child: Text('Privacidad',
-                        style: TextStyle(color: ext.textMuted, fontSize: 11))),
+                InkWell(
+                  onTap: () => context.go('/terms'),
+                  child: Text(l10n.authTerms.toUpperCase(),
+                      style: TextStyle(
+                          color: ext.textMuted.withValues(alpha: 0.5),
+                          fontSize: 10,
+                          fontFamily: 'JetBrainsMono')),
+                ),
+                Text(' | ',
+                    style: TextStyle(
+                        color: ext.textMuted.withValues(alpha: 0.5),
+                        fontSize: 10)),
+                InkWell(
+                  onTap: () => context.go('/privacy'),
+                  child: Text(l10n.authPrivacy.toUpperCase(),
+                      style: TextStyle(
+                          color: ext.textMuted.withValues(alpha: 0.5),
+                          fontSize: 10,
+                          fontFamily: 'JetBrainsMono')),
+                ),
               ],
-            ),
+            ).animate().fadeIn(delay: 600.ms),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HoverLoginButton extends StatefulWidget {
+  final VoidCallback? onPressed;
+  final bool loading;
+  final AuralixThemeExtension ext;
+  final String label;
+
+  const _HoverLoginButton(
+      {required this.onPressed,
+      required this.loading,
+      required this.ext,
+      required this.label});
+
+  @override
+  State<_HoverLoginButton> createState() => _HoverLoginButtonState();
+}
+
+class _HoverLoginButtonState extends State<_HoverLoginButton> {
+  bool _hovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final isDisabled = widget.onPressed == null;
+    final bgColor = isDisabled
+        ? widget.ext.surfaceVariant
+        : (widget.loading ? widget.ext.surfaceVariant : widget.ext.primary);
+    final fgColor = isDisabled
+        ? widget.ext.textMuted
+        : (widget.loading ? widget.ext.primary : widget.ext.bg);
+    final borderColor = isDisabled
+        ? widget.ext.border
+        : (widget.loading ? widget.ext.primary : widget.ext.primary);
+
+    return MouseRegion(
+      onEnter: (_) => {if (!isDisabled) setState(() => _hovering = true)},
+      onExit: (_) => {if (!isDisabled) setState(() => _hovering = false)},
+      cursor:
+          isDisabled ? SystemMouseCursors.forbidden : SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: widget.onPressed,
+        child: AnimatedContainer(
+          duration: 200.ms,
+          curve: Curves.easeOutCubic,
+          height: 48,
+          decoration: BoxDecoration(
+            color: _hovering ? bgColor.withValues(alpha: 0.9) : bgColor,
+            borderRadius: BorderRadius.circular(6),
+            border: Border.all(color: borderColor),
+            boxShadow: [
+              if (_hovering && !isDisabled)
+                BoxShadow(
+                    color: widget.ext.primary.withValues(alpha: 0.4),
+                    blurRadius: 15,
+                    spreadRadius: 1)
+            ],
+          ),
+          child: Center(
+            child: widget.loading
+                ? SizedBox(
+                    height: 18,
+                    width: 18,
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: widget.ext.primary),
+                  )
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.login, color: fgColor, size: 16),
+                      const SizedBox(width: 8),
+                      Text(
+                        widget.label.toUpperCase(),
+                        style: TextStyle(
+                            color: fgColor,
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'JetBrainsMono',
+                            letterSpacing: 1.2),
+                      ),
+                    ],
+                  ),
+          ),
         ),
       ),
     );

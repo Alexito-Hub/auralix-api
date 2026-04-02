@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -89,7 +89,7 @@ class _TerminalCardState extends State<TerminalCard> {
       '\n',
       '  "name": "Juan",',
       '\n',
-      '  "lastName": "Pérez"',
+      '  "lastName": "PÃ©rez"',
       '\n',
       '}',
       '\n'
@@ -128,7 +128,8 @@ class _TerminalCardState extends State<TerminalCard> {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: _statusColor(widget.statusCode).withAlpha((0.12 * 255).round()),
+            color:
+                _statusColor(widget.statusCode).withAlpha((0.12 * 255).round()),
             blurRadius: 18,
             spreadRadius: 1,
             offset: const Offset(0, 6),
@@ -139,33 +140,69 @@ class _TerminalCardState extends State<TerminalCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Header: command and status
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(widget.command,
-                  style: const TextStyle(fontFamily: 'JetBrains Mono')),
-              Row(
-                children: [
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: _statusColor(widget.statusCode).withAlpha((0.12 * 255).round()),
-                      borderRadius: BorderRadius.circular(6),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final compact = constraints.maxWidth < 560;
+              final statusChip = Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: _statusColor(widget.statusCode)
+                      .withAlpha((0.12 * 255).round()),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text('${widget.statusCode}',
+                    style: TextStyle(
+                        color: _statusColor(widget.statusCode),
+                        fontFamily: 'JetBrains Mono')),
+              );
+
+              final runButton = ElevatedButton(
+                onPressed: _running ? null : _start,
+                child: Text(_running ? 'Running...' : 'Run'),
+              );
+
+              if (compact) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.command,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontFamily: 'JetBrains Mono'),
                     ),
-                    child: Text('${widget.statusCode}',
-                        style: TextStyle(
-                            color: _statusColor(widget.statusCode),
-                            fontFamily: 'JetBrains Mono')),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: [statusChip, runButton],
+                    ),
+                  ],
+                );
+              }
+
+              return Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      widget.command,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontFamily: 'JetBrains Mono'),
+                    ),
                   ),
                   const SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: _running ? null : _start,
-                    child: Text(_running ? 'Running...' : 'Run'),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      statusChip,
+                      const SizedBox(width: 8),
+                      runButton,
+                    ],
                   ),
                 ],
-              )
-            ],
+              );
+            },
           ),
           const SizedBox(height: 8),
           const Divider(height: 1),
@@ -178,7 +215,7 @@ class _TerminalCardState extends State<TerminalCard> {
                 _lines.isEmpty
                     ? 'Presiona Run para ver la respuesta...'
                     : (_lines.join('\n') +
-                        (_running && _showCursor ? ' ▌' : '')),
+                        (_running && _showCursor ? ' â–Œ' : '')),
                 style: GoogleFonts.jetBrainsMono(
                     textStyle: const TextStyle(height: 1.35)),
               ),

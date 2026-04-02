@@ -22,6 +22,7 @@ dependencies:
   # Networking
   dio: ^5.7.0
   web_socket_channel: ^3.0.1
+  socket_io_client: ^3.1.2
   cookie_jar: ^4.0.8
   dio_cookie_manager: ^3.1.1
 
@@ -50,6 +51,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   gap: ^3.0.1
   visibility_detector: ^0.4.0+2
+  code_text_field: ^1.1.0
 
 dev_dependencies:
   flutter_test:

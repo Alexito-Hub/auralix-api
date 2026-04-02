@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 import 'theme_extension.dart';
@@ -11,10 +11,11 @@ class AppTheme {
 
     final base = ThemeData.dark(useMaterial3: true);
     const mono = GoogleFonts.jetBrainsMono;
-    const sans = GoogleFonts.inter;
+    const display = GoogleFonts.spaceMono;
 
     return base.copyWith(
       scaffoldBackgroundColor: c.background,
+      canvasColor: c.background,
       colorScheme: ColorScheme.dark(
         brightness: Brightness.dark,
         surface: c.surface,
@@ -31,29 +32,55 @@ class AppTheme {
         outlineVariant: c.textSubtle,
       ),
       textTheme: TextTheme(
-        // Display styles — sans-serif
-        displayLarge: sans(textStyle: TextStyle(color: c.text, fontSize: 57, fontWeight: FontWeight.w300)),
-        displayMedium: sans(textStyle: TextStyle(color: c.text, fontSize: 45, fontWeight: FontWeight.w300)),
-        displaySmall: sans(textStyle: TextStyle(color: c.text, fontSize: 36, fontWeight: FontWeight.w400)),
-        headlineLarge: sans(textStyle: TextStyle(color: c.text, fontSize: 32, fontWeight: FontWeight.w600)),
-        headlineMedium: sans(textStyle: TextStyle(color: c.text, fontSize: 28, fontWeight: FontWeight.w600)),
-        headlineSmall: sans(textStyle: TextStyle(color: c.text, fontSize: 24, fontWeight: FontWeight.w600)),
-        titleLarge: sans(textStyle: TextStyle(color: c.text, fontSize: 22, fontWeight: FontWeight.w600)),
-        titleMedium: sans(textStyle: TextStyle(color: c.text, fontSize: 16, fontWeight: FontWeight.w500)),
-        titleSmall: sans(textStyle: TextStyle(color: c.text, fontSize: 14, fontWeight: FontWeight.w500)),
-        // Body — monospace
-        bodyLarge: mono(textStyle: TextStyle(color: c.text, fontSize: 16)),
-        bodyMedium: mono(textStyle: TextStyle(color: c.text, fontSize: 14)),
-        bodySmall: mono(textStyle: TextStyle(color: c.textMuted, fontSize: 12)),
-        labelLarge: mono(textStyle: TextStyle(color: c.text, fontSize: 14, fontWeight: FontWeight.w600)),
-        labelMedium: mono(textStyle: TextStyle(color: c.textMuted, fontSize: 12)),
-        labelSmall: mono(textStyle: TextStyle(color: c.textMuted, fontSize: 11)),
+        // Terminal-inspired typography.
+        displayLarge: display(
+            textStyle: TextStyle(
+                color: c.text, fontSize: 50, fontWeight: FontWeight.w700)),
+        displayMedium: display(
+            textStyle: TextStyle(
+                color: c.text, fontSize: 42, fontWeight: FontWeight.w700)),
+        displaySmall: display(
+            textStyle: TextStyle(
+                color: c.text, fontSize: 34, fontWeight: FontWeight.w700)),
+        headlineLarge: display(
+            textStyle: TextStyle(
+                color: c.text, fontSize: 30, fontWeight: FontWeight.w700)),
+        headlineMedium: display(
+            textStyle: TextStyle(
+                color: c.text, fontSize: 26, fontWeight: FontWeight.w700)),
+        headlineSmall: display(
+            textStyle: TextStyle(
+                color: c.text, fontSize: 22, fontWeight: FontWeight.w700)),
+        titleLarge: display(
+            textStyle: TextStyle(
+                color: c.text, fontSize: 20, fontWeight: FontWeight.w600)),
+        titleMedium: mono(
+            textStyle: TextStyle(
+                color: c.text, fontSize: 15, fontWeight: FontWeight.w600)),
+        titleSmall: mono(
+            textStyle: TextStyle(
+                color: c.text, fontSize: 13, fontWeight: FontWeight.w600)),
+        bodyLarge: mono(
+            textStyle: TextStyle(color: c.text, fontSize: 15, height: 1.4)),
+        bodyMedium: mono(
+            textStyle: TextStyle(color: c.text, fontSize: 13, height: 1.4)),
+        bodySmall: mono(
+            textStyle:
+                TextStyle(color: c.textMuted, fontSize: 11.5, height: 1.35)),
+        labelLarge: mono(
+            textStyle: TextStyle(
+                color: c.text, fontSize: 13, fontWeight: FontWeight.w700)),
+        labelMedium:
+            mono(textStyle: TextStyle(color: c.textMuted, fontSize: 11.5)),
+        labelSmall:
+            mono(textStyle: TextStyle(color: c.textMuted, fontSize: 10.5)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: c.surface,
         hintStyle: mono(textStyle: TextStyle(color: c.textMuted, fontSize: 14)),
-        labelStyle: mono(textStyle: TextStyle(color: c.textMuted, fontSize: 14)),
+        labelStyle:
+            mono(textStyle: TextStyle(color: c.textMuted, fontSize: 14)),
         prefixStyle: mono(textStyle: TextStyle(color: c.primary, fontSize: 14)),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(6),
@@ -71,13 +98,16 @@ class AppTheme {
           borderRadius: BorderRadius.circular(6),
           borderSide: BorderSide(color: c.error),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: c.primary,
           foregroundColor: c.onPrimary,
-          textStyle: mono(textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+          textStyle: mono(
+              textStyle:
+                  const TextStyle(fontSize: 13, fontWeight: FontWeight.w700)),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
           elevation: 0,
@@ -87,7 +117,9 @@ class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: c.primary,
           side: BorderSide(color: c.primary),
-          textStyle: mono(textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
+          textStyle: mono(
+              textStyle:
+                  const TextStyle(fontSize: 14, fontWeight: FontWeight.w600)),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
         ),
@@ -107,6 +139,22 @@ class AppTheme {
         ),
         elevation: 0,
         margin: EdgeInsets.zero,
+      ),
+      appBarTheme: AppBarTheme(
+        backgroundColor: c.surface,
+        foregroundColor: c.text,
+        elevation: 0,
+        centerTitle: false,
+        titleTextStyle: mono(
+            textStyle: TextStyle(
+                color: c.text, fontSize: 15, fontWeight: FontWeight.w700)),
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: c.surfaceVariant,
+        selectedColor: c.primary.withValues(alpha: 0.2),
+        side: BorderSide(color: c.border),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+        labelStyle: mono(textStyle: TextStyle(color: c.text, fontSize: 12)),
       ),
       dividerTheme: DividerThemeData(color: c.border, thickness: 1),
       listTileTheme: ListTileThemeData(

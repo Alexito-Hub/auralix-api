@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:hub_aura/l10n/app_localizations.dart';
 import '../../../core/theme/theme_extension.dart';
 import '../../../core/network/api_client.dart';
 import '../providers/ws_logs_provider.dart';
@@ -20,8 +21,6 @@ class _RequestLogWidgetState extends ConsumerState<RequestLogWidget> {
   void initState() {
     super.initState();
     _fetchLogs();
-    // Also trigger WebSocket connection
-    ref.read(wsLogsProvider.notifier).connect();
   }
 
   @override
@@ -32,9 +31,11 @@ class _RequestLogWidgetState extends ConsumerState<RequestLogWidget> {
 
   Future<void> _fetchLogs() async {
     try {
-      final res = await ApiClient.instance.get('/api/hub/user/history', params: {'limit': '30'});
+      final res = await ApiClient.instance
+          .get('/hub/user/history', params: {'limit': '30'});
       if (res.data['status'] == true) {
-        final logs = List<Map<String, dynamic>>.from(res.data['data']['logs'] ?? []);
+        final logs =
+            List<Map<String, dynamic>>.from(res.data['data']['logs'] ?? []);
         if (mounted) setState(() => _polledLogs = logs);
       }
     } catch (_) {}
@@ -43,6 +44,7 @@ class _RequestLogWidgetState extends ConsumerState<RequestLogWidget> {
   @override
   Widget build(BuildContext context) {
     final ext = AuralixThemeExtension.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final wsLogs = ref.watch(wsLogsProvider);
 
     // Merge live WS logs + polled history, WS takes precedence
@@ -62,23 +64,39 @@ class _RequestLogWidgetState extends ConsumerState<RequestLogWidget> {
             ),
             child: Row(
               children: [
-                Container(width: 8, height: 8, decoration: BoxDecoration(color: ext.success, shape: BoxShape.circle)),
+                Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                        color: ext.success, shape: BoxShape.circle)),
                 const SizedBox(width: 8),
-                Text('logs en tiempo real', style: TextStyle(color: ext.textMuted, fontSize: 12, fontFamily: 'JetBrainsMono')),
+                Text(l10n.requestLogsLiveTitle,
+                    style: TextStyle(
+                        color: ext.textMuted,
+                        fontSize: 12,
+                        fontFamily: 'JetBrainsMono')),
                 const Spacer(),
                 if (showLive)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(color: ext.success.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(3)),
-                    child: Text('LIVE', style: TextStyle(color: ext.success, fontSize: 10, fontWeight: FontWeight.bold)),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                        color: ext.success.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(3)),
+                    child: Text(l10n.requestLogsLiveBadge,
+                        style: TextStyle(
+                            color: ext.success,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold)),
                   ),
                 const SizedBox(width: 8),
                 IconButton(
                   icon: Icon(Icons.refresh, size: 14, color: ext.textMuted),
                   onPressed: _fetchLogs,
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
-                  tooltip: 'Actualizar',
+                  constraints:
+                      const BoxConstraints(minWidth: 24, minHeight: 24),
+                  tooltip: l10n.requestLogsRefresh,
                 ),
               ],
             ),
@@ -111,7 +129,8 @@ class _RequestLogWidgetState extends ConsumerState<RequestLogWidget> {
     );
   }
 
-  Widget _buildPolledList(AuralixThemeExtension ext, List<Map<String, dynamic>> logs) {
+  Widget _buildPolledList(
+      AuralixThemeExtension ext, List<Map<String, dynamic>> logs) {
     if (logs.isEmpty) return _emptyState(ext);
     return ListView.builder(
       controller: _scrollCtrl,
@@ -132,7 +151,8 @@ class _RequestLogWidgetState extends ConsumerState<RequestLogWidget> {
           children: [
             Icon(Icons.terminal, size: 32, color: ext.textSubtle),
             const SizedBox(height: 8),
-            Text('Ninguna solicitud aún', style: TextStyle(color: ext.textMuted, fontSize: 12)),
+            Text(AppLocalizations.of(context)!.requestLogsEmpty,
+                style: TextStyle(color: ext.textMuted, fontSize: 12)),
           ],
         ),
       );
@@ -172,7 +192,11 @@ class _LogRow extends StatelessWidget {
             child: Text(
               method,
               style: TextStyle(
-                color: method == 'POST' ? ext.primary : method == 'DELETE' ? ext.error : ext.accentAlt,
+                color: method == 'POST'
+                    ? ext.primary
+                    : method == 'DELETE'
+                        ? ext.error
+                        : ext.accentAlt,
                 fontSize: 11,
                 fontFamily: 'JetBrainsMono',
                 fontWeight: FontWeight.bold,
@@ -189,7 +213,10 @@ class _LogRow extends StatelessWidget {
             ),
             child: Text(
               '$statusCode',
-              style: TextStyle(color: _statusColor, fontSize: 11, fontFamily: 'JetBrainsMono'),
+              style: TextStyle(
+                  color: _statusColor,
+                  fontSize: 11,
+                  fontFamily: 'JetBrainsMono'),
               textAlign: TextAlign.center,
             ),
           ),
@@ -198,14 +225,18 @@ class _LogRow extends StatelessWidget {
           Expanded(
             child: Text(
               path,
-              style: TextStyle(color: ext.text, fontSize: 12, fontFamily: 'JetBrainsMono'),
+              style: TextStyle(
+                  color: ext.text, fontSize: 12, fontFamily: 'JetBrainsMono'),
               overflow: TextOverflow.ellipsis,
             ),
           ),
           // Duration
           Text(
             '${durationMs}ms',
-            style: TextStyle(color: ext.textMuted, fontSize: 11, fontFamily: 'JetBrainsMono'),
+            style: TextStyle(
+                color: ext.textMuted,
+                fontSize: 11,
+                fontFamily: 'JetBrainsMono'),
           ),
         ],
       ),

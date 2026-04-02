@@ -1,4 +1,4 @@
-class HubUser {
+﻿class HubUser {
   final String id;
   final String email;
   final String? displayName;

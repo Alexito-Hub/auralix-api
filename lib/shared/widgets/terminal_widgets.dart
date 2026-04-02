@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 // flutter_animate unused here
 import '../../core/theme/theme_extension.dart';
@@ -78,11 +78,13 @@ class _TerminalInputState extends State<TerminalInput> {
       onFieldSubmitted: widget.onSubmitted,
       validator: widget.validator,
       cursorColor: ext.cursor,
-      style: TextStyle(color: ext.text, fontSize: 14, fontFamily: 'JetBrainsMono'),
+      style:
+          TextStyle(color: ext.text, fontSize: 14, fontFamily: 'JetBrainsMono'),
       decoration: InputDecoration(
         hintText: widget.hint,
         prefixText: widget.prefix != null ? '${widget.prefix} ' : null,
-        prefixStyle: TextStyle(color: ext.primary, fontSize: 14, fontFamily: 'JetBrainsMono'),
+        prefixStyle: TextStyle(
+            color: ext.primary, fontSize: 14, fontFamily: 'JetBrainsMono'),
       ),
     );
   }
@@ -111,11 +113,18 @@ class StatusBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(width: 6, height: 6, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+          Container(
+              width: 6,
+              height: 6,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
           const SizedBox(width: 6),
           Text(
             '$code $label',
-            style: TextStyle(color: color, fontSize: 12, fontFamily: 'JetBrainsMono', fontWeight: FontWeight.w600),
+            style: TextStyle(
+                color: color,
+                fontSize: 12,
+                fontFamily: 'JetBrainsMono',
+                fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -123,21 +132,21 @@ class StatusBadge extends StatelessWidget {
   }
 
   String _defaultMessage(int code) => switch (code) {
-    200 => 'OK',
-    201 => 'Created',
-    204 => 'No Content',
-    301 => 'Moved Permanently',
-    304 => 'Not Modified',
-    400 => 'Bad Request',
-    401 => 'Unauthorized',
-    403 => 'Forbidden',
-    404 => 'Not Found',
-    429 => 'Too Many Requests',
-    500 => 'Internal Server Error',
-    502 => 'Bad Gateway',
-    503 => 'Service Unavailable',
-    _ => '',
-  };
+        200 => 'OK',
+        201 => 'Created',
+        204 => 'No Content',
+        301 => 'Moved Permanently',
+        304 => 'Not Modified',
+        400 => 'Bad Request',
+        401 => 'Unauthorized',
+        403 => 'Forbidden',
+        404 => 'Not Found',
+        429 => 'Too Many Requests',
+        500 => 'Internal Server Error',
+        502 => 'Bad Gateway',
+        503 => 'Service Unavailable',
+        _ => '',
+      };
 }
 
 /// Typewriter animated text widget.
@@ -159,7 +168,8 @@ class TypewriterText extends StatefulWidget {
   State<TypewriterText> createState() => _TypewriterTextState();
 }
 
-class _TypewriterTextState extends State<TypewriterText> with SingleTickerProviderStateMixin {
+class _TypewriterTextState extends State<TypewriterText>
+    with SingleTickerProviderStateMixin {
   String _displayed = '';
   int _index = 0;
   late AnimationController _cursorController;
@@ -167,7 +177,8 @@ class _TypewriterTextState extends State<TypewriterText> with SingleTickerProvid
   @override
   void initState() {
     super.initState();
-    _cursorController = AnimationController(vsync: this, duration: const Duration(milliseconds: 600))
+    _cursorController = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 600))
       ..repeat(reverse: true);
     _typeNext();
   }
@@ -194,22 +205,25 @@ class _TypewriterTextState extends State<TypewriterText> with SingleTickerProvid
     return AnimatedBuilder(
       animation: _cursorController,
       builder: (_, __) {
-        final cursor = widget.showCursor && _cursorController.value > 0.5 ? '▋' : ' ';
+        final cursor =
+            widget.showCursor && _cursorController.value > 0.5 ? 'â–‹' : ' ';
         return Text(
           '$_displayed$cursor',
-          style: (widget.style ?? TextStyle(color: ext.text, fontSize: 14)).copyWith(fontFamily: 'JetBrainsMono'),
+          style: (widget.style ?? TextStyle(color: ext.text, fontSize: 14))
+              .copyWith(fontFamily: 'JetBrainsMono'),
         );
       },
     );
   }
 }
 
-/// Console output panel — scrollable terminal output.
+/// Console output panel â€” scrollable terminal output.
 class ConsoleOutput extends StatelessWidget {
   final List<ConsoleEntry> entries;
   final ScrollController? scrollController;
 
-  const ConsoleOutput({super.key, required this.entries, this.scrollController});
+  const ConsoleOutput(
+      {super.key, required this.entries, this.scrollController});
 
   @override
   Widget build(BuildContext context) {
@@ -252,13 +266,17 @@ class _ConsoleHeader extends StatelessWidget {
           const SizedBox(width: 6),
           _dot(const Color(0xFF28c840)),
           const SizedBox(width: 12),
-          Text('terminal', style: TextStyle(color: ext.textMuted, fontSize: 12)),
+          Text('terminal',
+              style: TextStyle(color: ext.textMuted, fontSize: 12)),
         ],
       ),
     );
   }
 
-  Widget _dot(Color c) => Container(width: 12, height: 12, decoration: BoxDecoration(color: c, shape: BoxShape.circle));
+  Widget _dot(Color c) => Container(
+      width: 12,
+      height: 12,
+      decoration: BoxDecoration(color: c, shape: BoxShape.circle));
 }
 
 class _ConsoleLine extends StatelessWidget {
@@ -274,7 +292,11 @@ class _ConsoleLine extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (entry.prefix != null)
-            Text('${entry.prefix} ', style: TextStyle(color: ext.primary, fontSize: 12, fontFamily: 'JetBrainsMono')),
+            Text('${entry.prefix} ',
+                style: TextStyle(
+                    color: ext.primary,
+                    fontSize: 12,
+                    fontFamily: 'JetBrainsMono')),
           Expanded(
             child: SelectableText(
               entry.text,
@@ -295,7 +317,8 @@ class _ConsoleLine extends StatelessWidget {
           if (entry.copyable)
             IconButton(
               icon: Icon(Icons.copy, size: 14, color: ext.textMuted),
-              onPressed: () => Clipboard.setData(ClipboardData(text: entry.text)),
+              onPressed: () =>
+                  Clipboard.setData(ClipboardData(text: entry.text)),
               padding: EdgeInsets.zero,
               constraints: const BoxConstraints(minWidth: 24, minHeight: 24),
               tooltip: 'Copy',
@@ -314,17 +337,26 @@ class ConsoleEntry {
   final String? prefix;
   final bool copyable;
 
-  const ConsoleEntry(this.text, {this.type = ConsoleEntryType.normal, this.prefix, this.copyable = false});
+  const ConsoleEntry(this.text,
+      {this.type = ConsoleEntryType.normal,
+      this.prefix,
+      this.copyable = false});
 
-  factory ConsoleEntry.prompt(String cmd) => ConsoleEntry(cmd, prefix: '\$', type: ConsoleEntryType.info);
-  factory ConsoleEntry.success(String t) => ConsoleEntry(t, type: ConsoleEntryType.success, prefix: '[+]');
-  factory ConsoleEntry.error(String t) => ConsoleEntry(t, type: ConsoleEntryType.error, prefix: '[x]');
-  factory ConsoleEntry.warning(String t) => ConsoleEntry(t, type: ConsoleEntryType.warning, prefix: '[!]');
-  factory ConsoleEntry.info(String t) => ConsoleEntry(t, type: ConsoleEntryType.info, prefix: 'ℹ');
-  factory ConsoleEntry.muted(String t) => ConsoleEntry(t, type: ConsoleEntryType.muted);
+  factory ConsoleEntry.prompt(String cmd) =>
+      ConsoleEntry(cmd, prefix: '\$', type: ConsoleEntryType.info);
+  factory ConsoleEntry.success(String t) =>
+      ConsoleEntry(t, type: ConsoleEntryType.success, prefix: '[+]');
+  factory ConsoleEntry.error(String t) =>
+      ConsoleEntry(t, type: ConsoleEntryType.error, prefix: '[x]');
+  factory ConsoleEntry.warning(String t) =>
+      ConsoleEntry(t, type: ConsoleEntryType.warning, prefix: '[!]');
+  factory ConsoleEntry.info(String t) =>
+      ConsoleEntry(t, type: ConsoleEntryType.info, prefix: 'â„¹');
+  factory ConsoleEntry.muted(String t) =>
+      ConsoleEntry(t, type: ConsoleEntryType.muted);
 }
 
-/// Metric card – used in Dashboard
+/// Metric card â€“ used in Dashboard
 class MetricCard extends StatelessWidget {
   final String label;
   final String value;
@@ -367,7 +399,8 @@ class MetricCard extends StatelessWidget {
           ),
           if (subtitle != null) ...[
             const SizedBox(height: 4),
-            Text(subtitle!, style: TextStyle(color: ext.textMuted, fontSize: 11)),
+            Text(subtitle!,
+                style: TextStyle(color: ext.textMuted, fontSize: 11)),
           ],
         ],
       ),
