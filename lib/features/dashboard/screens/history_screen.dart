@@ -174,10 +174,10 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
                   // Table / list
                   Expanded(
                     child: _loading
-                      ? _HistoryLoadingSkeleton(
-                        ext: ext,
-                        compact: isCompact,
-                        )
+                        ? _HistoryLoadingSkeleton(
+                            ext: ext,
+                            compact: isCompact,
+                          )
                         : _error != null
                             ? Center(
                                 child: Text(_resolvedError(l10n),
@@ -351,75 +351,75 @@ class _HistoryScreenState extends ConsumerState<HistoryScreen> {
               color: ext.primary,
               onRefresh: () => _fetch(page: 1),
               child: ListView.separated(
-              physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: rows.length,
-              separatorBuilder: (_, __) =>
-                Divider(color: ext.border, height: 1),
-              itemBuilder: (_, i) {
-                final l = rows[i];
-                final code = _asInt(l['statusCode']) ?? 200;
-                final responseMs = _asInt(l['responseTimeMs']) ?? 0;
-                final deducted = _asInt(l['creditsDeducted']) ?? 0;
-                final color = code >= 500
-                  ? ext.error
-                  : code >= 400
-                    ? ext.warning
-                    : ext.success;
-                return Padding(
-                padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Row(children: [
-                  SizedBox(
-                    width: 70,
-                    child: Text(l['method'] ?? 'GET',
-                      style: TextStyle(
-                        color: ext.primary,
-                        fontSize: 12,
-                        fontFamily: 'JetBrainsMono',
-                        fontWeight: FontWeight.bold))),
-                  SizedBox(
-                    width: 60,
-                    child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.15),
-                      borderRadius: BorderRadius.circular(3)),
-                    child: Text('$code',
-                      style: TextStyle(
-                        color: color,
-                        fontSize: 11,
-                        fontFamily: 'JetBrainsMono'),
-                      textAlign: TextAlign.center),
-                    )),
-                  Expanded(
-                    child: Text(l['endpoint'] ?? '/',
-                      style: TextStyle(
-                        color: ext.text,
-                        fontSize: 12,
-                        fontFamily: 'JetBrainsMono'),
-                      overflow: TextOverflow.ellipsis)),
-                  SizedBox(
-                    width: 80,
-                    child: Text('${responseMs}ms',
-                      style: TextStyle(
-                        color: ext.textMuted,
-                        fontSize: 11,
-                        fontFamily: 'JetBrainsMono'),
-                      textAlign: TextAlign.end)),
-                  SizedBox(
-                    width: 80,
-                    child: Text(deducted == 0 ? '-' : '-$deducted',
-                      style: TextStyle(
-                        color: deducted == 0
-                          ? ext.textMuted
-                          : ext.warning,
-                        fontSize: 11,
-                        fontFamily: 'JetBrainsMono'),
-                      textAlign: TextAlign.end)),
-                ]),
-                );
-              },
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: rows.length,
+                separatorBuilder: (_, __) =>
+                    Divider(color: ext.border, height: 1),
+                itemBuilder: (_, i) {
+                  final l = rows[i];
+                  final code = _asInt(l['statusCode']) ?? 200;
+                  final responseMs = _asInt(l['responseTimeMs']) ?? 0;
+                  final deducted = _asInt(l['creditsDeducted']) ?? 0;
+                  final color = code >= 500
+                      ? ext.error
+                      : code >= 400
+                          ? ext.warning
+                          : ext.success;
+                  return Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: Row(children: [
+                      SizedBox(
+                          width: 70,
+                          child: Text(l['method'] ?? 'GET',
+                              style: TextStyle(
+                                  color: ext.primary,
+                                  fontSize: 12,
+                                  fontFamily: 'JetBrainsMono',
+                                  fontWeight: FontWeight.bold))),
+                      SizedBox(
+                          width: 60,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                                color: color.withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(3)),
+                            child: Text('$code',
+                                style: TextStyle(
+                                    color: color,
+                                    fontSize: 11,
+                                    fontFamily: 'JetBrainsMono'),
+                                textAlign: TextAlign.center),
+                          )),
+                      Expanded(
+                          child: Text(l['endpoint'] ?? '/',
+                              style: TextStyle(
+                                  color: ext.text,
+                                  fontSize: 12,
+                                  fontFamily: 'JetBrainsMono'),
+                              overflow: TextOverflow.ellipsis)),
+                      SizedBox(
+                          width: 80,
+                          child: Text('${responseMs}ms',
+                              style: TextStyle(
+                                  color: ext.textMuted,
+                                  fontSize: 11,
+                                  fontFamily: 'JetBrainsMono'),
+                              textAlign: TextAlign.end)),
+                      SizedBox(
+                          width: 80,
+                          child: Text(deducted == 0 ? '-' : '-$deducted',
+                              style: TextStyle(
+                                  color: deducted == 0
+                                      ? ext.textMuted
+                                      : ext.warning,
+                                  fontSize: 11,
+                                  fontFamily: 'JetBrainsMono'),
+                              textAlign: TextAlign.end)),
+                    ]),
+                  );
+                },
               ),
             ),
           ),

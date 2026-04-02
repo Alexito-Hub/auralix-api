@@ -37,8 +37,7 @@ class ApiClient {
     final parsed = Uri.tryParse(raw);
     final pathCandidate =
         parsed != null && parsed.hasScheme ? parsed.path : raw;
-    final normalizedPath =
-        '/${pathCandidate.replaceFirst(RegExp(r'^/+'), '')}';
+    final normalizedPath = '/${pathCandidate.replaceFirst(RegExp(r'^/+'), '')}';
     return '$base$normalizedPath';
   }
 

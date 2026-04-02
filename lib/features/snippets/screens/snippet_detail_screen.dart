@@ -105,8 +105,7 @@ class _SnippetDetailScreenState extends State<SnippetDetailScreen> {
     setState(() => _downloadAttempting = true);
     final ext = AuralixThemeExtension.of(context);
     try {
-      final opened =
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
+      final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
       if (!mounted) return;
 
       if (!opened) {

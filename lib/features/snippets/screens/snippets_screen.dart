@@ -228,8 +228,10 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
     return out;
   }
 
-  Future<void> _fetchSnippets({bool reset = false, bool loadMore = false}) async {
-    if (loadMore && (_initialLoading || _refreshing || _loadingMore || !_hasMore)) {
+  Future<void> _fetchSnippets(
+      {bool reset = false, bool loadMore = false}) async {
+    if (loadMore &&
+        (_initialLoading || _refreshing || _loadingMore || !_hasMore)) {
       return;
     }
     if (reset && (_refreshing || _loadingMore)) {
@@ -266,8 +268,8 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
         if (pagination is Map) {
           nextTotal = int.tryParse('${pagination['total'] ?? items.length}') ??
               items.length;
-          nextPage = int.tryParse('${pagination['page'] ?? targetPage}') ??
-              targetPage;
+          nextPage =
+              int.tryParse('${pagination['page'] ?? targetPage}') ?? targetPage;
           nextPages = int.tryParse('${pagination['pages'] ?? 1}') ?? 1;
         }
 
@@ -288,9 +290,8 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
         return;
       }
 
-      final message =
-          (res.data is Map ? res.data['msg'] : null)?.toString() ??
-              'Failed to load snippets';
+      final message = (res.data is Map ? res.data['msg'] : null)?.toString() ??
+          'Failed to load snippets';
       if (!mounted) return;
       setState(() {
         _initialLoading = false;
@@ -408,227 +409,238 @@ class _SnippetsScreenState extends ConsumerState<SnippetsScreen> {
                 child: SingleChildScrollView(
                   controller: _scrollCtrl,
                   physics: const AlwaysScrollableScrollPhysics(),
-                  padding: EdgeInsets.fromLTRB(context.pageHorizontalPadding, 20,
-                      context.pageHorizontalPadding, 24),
+                  padding: EdgeInsets.fromLTRB(context.pageHorizontalPadding,
+                      20, context.pageHorizontalPadding, 24),
                   child: TerminalPageReveal(
                     animationKey: 'snippets-screen',
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                      TerminalPageHeader(
-                        title: l10n.navSnippets.toLowerCase(),
-                        subtitle: l10n.snippetsSubtitle,
-                        actions: [
-                          _HoverCreateButton(
-                            isCreating: _showCreate,
-                            onPressed: () =>
-                                setState(() => _showCreate = !_showCreate),
-                            ext: ext,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
+                        TerminalPageHeader(
+                          title: l10n.navSnippets.toLowerCase(),
+                          subtitle: l10n.snippetsSubtitle,
+                          actions: [
+                            _HoverCreateButton(
+                              isCreating: _showCreate,
+                              onPressed: () =>
+                                  setState(() => _showCreate = !_showCreate),
+                              ext: ext,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
 
-                      // Dynamic Control Panel
-                      _CyberFilterPanel(
-                        compact: compact,
-                        ext: ext,
-                        l10n: l10n,
-                        searchCtrl: _searchCtrl,
-                        languageFilter: _languageFilter,
-                        onlyProtected: _onlyProtected,
-                        languageItems: _languageItems(l10n),
-                        onLanguageChanged: (val) =>
-                            setState(() => _languageFilter = val ?? 'all'),
-                        onProtectedChanged: (val) =>
-                            setState(() => _onlyProtected = val),
-                        onClear: () => setState(() {
-                          _searchCtrl.clear();
-                          _languageFilter = 'all';
-                          _onlyProtected = false;
-                        }),
-                        onSearchChanged: () => setState(() {}),
-                      ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.05),
+                        // Dynamic Control Panel
+                        _CyberFilterPanel(
+                          compact: compact,
+                          ext: ext,
+                          l10n: l10n,
+                          searchCtrl: _searchCtrl,
+                          languageFilter: _languageFilter,
+                          onlyProtected: _onlyProtected,
+                          languageItems: _languageItems(l10n),
+                          onLanguageChanged: (val) =>
+                              setState(() => _languageFilter = val ?? 'all'),
+                          onProtectedChanged: (val) =>
+                              setState(() => _onlyProtected = val),
+                          onClear: () => setState(() {
+                            _searchCtrl.clear();
+                            _languageFilter = 'all';
+                            _onlyProtected = false;
+                          }),
+                          onSearchChanged: () => setState(() {}),
+                        )
+                            .animate()
+                            .fadeIn(duration: 300.ms)
+                            .slideY(begin: 0.05),
 
-                      const SizedBox(height: 24),
-
-                      // Create Form Injection
-                      if (_showCreate) ...[
-                        _CreateSnippetCard(
-                          onCreated: () {
-                            setState(() => _showCreate = false);
-                            _refreshFeed();
-                          },
-                        ).animate().fadeIn().slideY(begin: -0.1),
                         const SizedBox(height: 24),
-                      ],
 
-                      // Feed
-                      AnimatedSwitcher(
-                        duration: 300.ms,
-                        switchInCurve: Curves.easeOutBack,
-                        switchOutCurve: Curves.easeInCubic,
-                        layoutBuilder: (curr, prev) => Stack(
-                            alignment: Alignment.topCenter,
-                            children: <Widget>[...prev].followedBy(
-                                <Widget>[if (curr != null) curr]).toList()),
-                        child: _initialLoading && _snippets.isEmpty
-                            ? _SnippetsFeedSkeleton(ext: ext, l10n: l10n)
-                            : _loadError != null && _snippets.isEmpty
-                                ? SizedBox(
-                                    key: const ValueKey('snippets-error'),
-                                    height: 160,
-                                    child: Center(
-                                      child: Column(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Text(
-                                            _loadError ?? l10n.snippetsFetchError,
-                                            style: TextStyle(
-                                                color: ext.error,
-                                                fontFamily: 'JetBrainsMono',
-                                                fontWeight: FontWeight.bold),
-                                            textAlign: TextAlign.center,
-                                          ),
-                                          const SizedBox(height: 10),
-                                          TextButton(
-                                            onPressed: _refreshFeed,
-                                            child: Text(l10n.commonRetry),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                : Container(
-                                    key: ValueKey(
-                                    'snippets-list-${_snippets.length}-$_page-${_loadingMore ? 1 : 0}'),
-                                    child: Builder(builder: (_) {
-                                      final filtered = _applyFilters(_snippets);
-                                      if (_snippets.isEmpty) {
-                                        return SizedBox(
-                                          key: const ValueKey(
-                                              'snippets-empty-all'),
-                                          height: 180,
-                                          child: Center(
-                                            child: Column(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Icon(Icons.code_off,
-                                                    size: 48,
-                                                    color: ext.textMuted
-                                                        .withValues(alpha: 0.2)),
-                                                const SizedBox(height: 16),
-                                                Text(l10n.snippetsEmptyAll,
-                                                    style: TextStyle(
-                                                        color: ext.textMuted,
-                                                        fontFamily:
-                                                            'JetBrainsMono',
-                                                        fontWeight:
-                                                            FontWeight.bold)),
-                                              ],
+                        // Create Form Injection
+                        if (_showCreate) ...[
+                          _CreateSnippetCard(
+                            onCreated: () {
+                              setState(() => _showCreate = false);
+                              _refreshFeed();
+                            },
+                          ).animate().fadeIn().slideY(begin: -0.1),
+                          const SizedBox(height: 24),
+                        ],
+
+                        // Feed
+                        AnimatedSwitcher(
+                          duration: 300.ms,
+                          switchInCurve: Curves.easeOutBack,
+                          switchOutCurve: Curves.easeInCubic,
+                          layoutBuilder: (curr, prev) => Stack(
+                              alignment: Alignment.topCenter,
+                              children: <Widget>[...prev].followedBy(
+                                  <Widget>[if (curr != null) curr]).toList()),
+                          child: _initialLoading && _snippets.isEmpty
+                              ? _SnippetsFeedSkeleton(ext: ext, l10n: l10n)
+                              : _loadError != null && _snippets.isEmpty
+                                  ? SizedBox(
+                                      key: const ValueKey('snippets-error'),
+                                      height: 160,
+                                      child: Center(
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(
+                                              _loadError ??
+                                                  l10n.snippetsFetchError,
+                                              style: TextStyle(
+                                                  color: ext.error,
+                                                  fontFamily: 'JetBrainsMono',
+                                                  fontWeight: FontWeight.bold),
+                                              textAlign: TextAlign.center,
                                             ),
-                                          ),
-                                        );
-                                      }
+                                            const SizedBox(height: 10),
+                                            TextButton(
+                                              onPressed: _refreshFeed,
+                                              child: Text(l10n.commonRetry),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  : Container(
+                                      key: ValueKey(
+                                          'snippets-list-${_snippets.length}-$_page-${_loadingMore ? 1 : 0}'),
+                                      child: Builder(builder: (_) {
+                                        final filtered =
+                                            _applyFilters(_snippets);
+                                        if (_snippets.isEmpty) {
+                                          return SizedBox(
+                                            key: const ValueKey(
+                                                'snippets-empty-all'),
+                                            height: 180,
+                                            child: Center(
+                                              child: Column(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Icon(Icons.code_off,
+                                                      size: 48,
+                                                      color: ext.textMuted
+                                                          .withValues(
+                                                              alpha: 0.2)),
+                                                  const SizedBox(height: 16),
+                                                  Text(l10n.snippetsEmptyAll,
+                                                      style: TextStyle(
+                                                          color: ext.textMuted,
+                                                          fontFamily:
+                                                              'JetBrainsMono',
+                                                          fontWeight:
+                                                              FontWeight.bold)),
+                                                ],
+                                              ),
+                                            ),
+                                          );
+                                        }
 
-                                      if (filtered.isEmpty) {
-                                        return SizedBox(
-                                          key: const ValueKey(
-                                              'snippets-empty-filtered'),
-                                          height: 120,
-                                          child: Center(
-                                            child: Text(
-                                                l10n.snippetsEmptyFiltered,
-                                                style: TextStyle(
-                                                    color: ext.textMuted,
-                                                    fontFamily:
-                                                        'JetBrainsMono')),
-                                          ),
-                                        );
-                                      }
+                                        if (filtered.isEmpty) {
+                                          return SizedBox(
+                                            key: const ValueKey(
+                                                'snippets-empty-filtered'),
+                                            height: 120,
+                                            child: Center(
+                                              child: Text(
+                                                  l10n.snippetsEmptyFiltered,
+                                                  style: TextStyle(
+                                                      color: ext.textMuted,
+                                                      fontFamily:
+                                                          'JetBrainsMono')),
+                                            ),
+                                          );
+                                        }
 
-                                      final summaryTotal =
-                                          _total > 0 ? _total : _snippets.length;
-                                      return Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          if (_refreshing)
+                                        final summaryTotal = _total > 0
+                                            ? _total
+                                            : _snippets.length;
+                                        return Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            if (_refreshing)
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 12),
+                                                child: LinearProgressIndicator(
+                                                  minHeight: 2,
+                                                  color: ext.primary,
+                                                  backgroundColor: ext.border,
+                                                ),
+                                              ),
                                             Padding(
                                               padding: const EdgeInsets.only(
                                                   bottom: 12),
-                                              child: LinearProgressIndicator(
-                                                minHeight: 2,
-                                                color: ext.primary,
-                                                backgroundColor: ext.border,
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                      width: 4,
+                                                      height: 4,
+                                                      decoration: BoxDecoration(
+                                                          color: ext.primary,
+                                                          shape:
+                                                              BoxShape.circle)),
+                                                  const SizedBox(width: 8),
+                                                  Text(
+                                                    l10n.snippetsYieldSummary(
+                                                        filtered.length,
+                                                        summaryTotal),
+                                                    style: TextStyle(
+                                                        color: ext.textMuted,
+                                                        fontSize: 11,
+                                                        fontFamily:
+                                                            'JetBrainsMono',
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        letterSpacing: 1.0),
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                          Padding(
-                                            padding:
-                                                const EdgeInsets.only(bottom: 12),
-                                            child: Row(
-                                              children: [
-                                                Container(
-                                                    width: 4,
-                                                    height: 4,
-                                                    decoration: BoxDecoration(
-                                                        color: ext.primary,
-                                                        shape:
-                                                            BoxShape.circle)),
-                                                const SizedBox(width: 8),
-                                                Text(
-                                                  l10n.snippetsYieldSummary(
-                                                      filtered.length,
-                                                      summaryTotal),
-                                                  style: TextStyle(
-                                                      color: ext.textMuted,
-                                                      fontSize: 11,
-                                                      fontFamily:
-                                                          'JetBrainsMono',
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      letterSpacing: 1.0),
-                                                ),
-                                              ],
+                                            ListView.separated(
+                                              itemCount: filtered.length,
+                                              shrinkWrap: true,
+                                              physics:
+                                                  const NeverScrollableScrollPhysics(),
+                                              separatorBuilder: (_, __) =>
+                                                  const SizedBox(height: 12),
+                                              itemBuilder: (_, i) =>
+                                                  _SnippetTile(
+                                                          snippet: filtered[i],
+                                                          key: ValueKey(
+                                                              filtered[i]
+                                                                  ['shortId']),
+                                                          onUpdated:
+                                                              _refreshFeed)
+                                                      .animate()
+                                                      .fadeIn(
+                                                          delay: (i * 50).ms)
+                                                      .slideX(begin: 0.05),
                                             ),
-                                          ),
-                                          ListView.separated(
-                                            itemCount: filtered.length,
-                                            shrinkWrap: true,
-                                            physics:
-                                                const NeverScrollableScrollPhysics(),
-                                            separatorBuilder: (_, __) =>
-                                                const SizedBox(height: 12),
-                                            itemBuilder: (_, i) => _SnippetTile(
-                                                    snippet: filtered[i],
-                                                    key: ValueKey(
-                                                        filtered[i]['shortId']),
-                                                    onUpdated: _refreshFeed)
-                                                .animate()
-                                                .fadeIn(delay: (i * 50).ms)
-                                                .slideX(begin: 0.05),
-                                          ),
-                                          if (_loadingMore)
-                                            Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 14, bottom: 8),
-                                              child: Center(
-                                                child: SizedBox(
-                                                  height: 18,
-                                                  width: 18,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    strokeWidth: 2,
-                                                    color: ext.primary,
+                                            if (_loadingMore)
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 14, bottom: 8),
+                                                child: Center(
+                                                  child: SizedBox(
+                                                    height: 18,
+                                                    width: 18,
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                      color: ext.primary,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                        ],
-                                      );
-                                    }),
-                                  ),
-                      ),
+                                          ],
+                                        );
+                                      }),
+                                    ),
+                        ),
                       ],
                     ),
                   ),

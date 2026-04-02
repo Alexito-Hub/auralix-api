@@ -136,7 +136,7 @@ class _PlanCardState extends State<_PlanCard> {
                       size: 16,
                       color: widget.selected ? ext.primary : ext.textMuted),
                   const SizedBox(width: 8),
-                    if (widget.badgeText != null)
+                  if (widget.badgeText != null)
                     Container(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 6, vertical: 2),
@@ -164,7 +164,7 @@ class _PlanCardState extends State<_PlanCard> {
                           borderRadius: BorderRadius.circular(3),
                           border: Border.all(
                               color: ext.success.withValues(alpha: 0.3))),
-                        child: Text(l10n.billingBestValue,
+                      child: Text(l10n.billingBestValue,
                           style: TextStyle(
                               color: ext.success,
                               fontSize: 9,
@@ -174,7 +174,7 @@ class _PlanCardState extends State<_PlanCard> {
                 ],
               ),
               const SizedBox(height: 12),
-                    Text(widget.planName.toUpperCase(),
+              Text(widget.planName.toUpperCase(),
                   style: TextStyle(
                       color: isActive ? ext.text : ext.textMuted,
                       fontSize: 13,
@@ -215,10 +215,10 @@ class _PlanCardState extends State<_PlanCard> {
                 ),
               const Spacer(),
               Divider(color: ext.border.withValues(alpha: 0.5), height: 24),
-                Text(
+              Text(
                   credits < 0
-                    ? l10n.billingUnlimited
-                    : l10n.billingCredits(credits),
+                      ? l10n.billingUnlimited
+                      : l10n.billingCredits(credits),
                   style: TextStyle(
                       color: ext.text,
                       fontSize: 11,

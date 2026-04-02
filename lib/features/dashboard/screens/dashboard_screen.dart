@@ -56,7 +56,8 @@ final _historyPreviewProvider =
   } on DioException catch (e) {
     final payload = e.response?.data;
     final message = payload is Map ? payload['msg']?.toString() : null;
-    throw Exception(message ?? 'Connection error while loading recent activity');
+    throw Exception(
+        message ?? 'Connection error while loading recent activity');
   }
 });
 
@@ -175,10 +176,9 @@ class DashboardScreen extends ConsumerWidget {
                     children: [
                       TerminalPageHeader(
                         title: l10n.navDashboard.toLowerCase(),
-                        subtitle: l10n.dashboardSubtitle(
-                            user?.displayName ??
-                                user?.email.split('@').first ??
-                                'dev'),
+                        subtitle: l10n.dashboardSubtitle(user?.displayName ??
+                            user?.email.split('@').first ??
+                            'dev'),
                         actions: [profileChip],
                       ),
                       const SizedBox(height: 24),
@@ -194,8 +194,8 @@ class DashboardScreen extends ConsumerWidget {
                                 style: TextStyle(color: ext.error),
                               ),
                             ),
-                            data: (data) =>
-                                _MetricsGrid(user: user, data: data, l10n: l10n),
+                            data: (data) => _MetricsGrid(
+                                user: user, data: data, l10n: l10n),
                           )
                           .animate()
                           .fadeIn(duration: 300.ms, curve: Curves.easeOut)
@@ -231,7 +231,9 @@ class DashboardScreen extends ConsumerWidget {
                                     ],
                                   ),
                                   const SizedBox(height: 8),
-                                    Text(l10n.dashboardConsumptionCompactDescription,
+                                  Text(
+                                      l10n
+                                          .dashboardConsumptionCompactDescription,
                                       style: TextStyle(
                                           color: ext.textMuted,
                                           fontSize: 12,
@@ -244,7 +246,7 @@ class DashboardScreen extends ConsumerWidget {
                                       icon: const Icon(Icons.credit_card,
                                           size: 14),
                                       label: Text(
-                                        l10n.dashboardPurchasePlanCredits),
+                                          l10n.dashboardPurchasePlanCredits),
                                       style: ElevatedButton.styleFrom(
                                           padding: const EdgeInsets.symmetric(
                                               vertical: 16)),
@@ -262,16 +264,18 @@ class DashboardScreen extends ConsumerWidget {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                      Text(l10n
-                                        .dashboardConsumptionSystemHealthTitle,
+                                        Text(
+                                            l10n
+                                                .dashboardConsumptionSystemHealthTitle,
                                             style: TextStyle(
                                                 color: ext.text,
                                                 fontSize: 13,
                                                 fontWeight: FontWeight.w700,
                                                 fontFamily: 'JetBrainsMono')),
                                         const SizedBox(height: 4),
-                                      Text(
-                                        l10n.dashboardConsumptionDesktopDescription,
+                                        Text(
+                                            l10n
+                                                .dashboardConsumptionDesktopDescription,
                                             style: TextStyle(
                                                 color: ext.textMuted,
                                                 fontSize: 12)),
@@ -284,7 +288,7 @@ class DashboardScreen extends ConsumerWidget {
                                     icon:
                                         const Icon(Icons.credit_card, size: 16),
                                     label: Text(l10n.dashboardPurchasePlan,
-                                      style: const TextStyle(
+                                        style: const TextStyle(
                                             fontFamily: 'JetBrainsMono',
                                             fontWeight: FontWeight.bold)),
                                     style: ElevatedButton.styleFrom(
@@ -297,7 +301,7 @@ class DashboardScreen extends ConsumerWidget {
                       const SizedBox(height: 32),
 
                       // History Preview
-                            _HistoryPreviewPanel(
+                      _HistoryPreviewPanel(
                               state: historyPreview, ext: ext, l10n: l10n)
                           .animate()
                           .fadeIn(delay: 300.ms),
@@ -416,7 +420,7 @@ class _HistoryPreviewPanel extends StatelessWidget {
             children: [
               Icon(Icons.history, size: 16, color: ext.textMuted),
               const SizedBox(width: 8),
-                Text(l10n.dashboardRecentActivityTitle,
+              Text(l10n.dashboardRecentActivityTitle,
                   style: TextStyle(
                       color: ext.text,
                       fontSize: 13,
@@ -428,8 +432,8 @@ class _HistoryPreviewPanel extends StatelessWidget {
                 onPressed: () => context.go('/history'),
                 icon: const Icon(Icons.arrow_forward, size: 14),
                 label: Text(l10n.dashboardViewFullHistory,
-                  style: const TextStyle(
-                    fontFamily: 'JetBrainsMono', fontSize: 11)),
+                    style: const TextStyle(
+                        fontFamily: 'JetBrainsMono', fontSize: 11)),
               ),
             ],
           ),
@@ -445,23 +449,19 @@ class _HistoryPreviewPanel extends StatelessWidget {
                     color: ext.surfaceVariant.withValues(alpha: 0.4),
                     borderRadius: BorderRadius.circular(6),
                   ),
-                )
-                    .animate(onPlay: (c) => c.repeat(reverse: true))
-                    .fade(
-                        begin: 0.45,
-                        end: 1,
-                        duration: (620 + (index * 70)).ms),
+                ).animate(onPlay: (c) => c.repeat(reverse: true)).fade(
+                    begin: 0.45, end: 1, duration: (620 + (index * 70)).ms),
               ),
             ),
             error: (_, __) => Padding(
                 padding: const EdgeInsets.all(16),
-              child: Text(l10n.dashboardHistoryLoadError,
+                child: Text(l10n.dashboardHistoryLoadError,
                     style: TextStyle(color: ext.error, fontSize: 12))),
             data: (rows) {
               if (rows.isEmpty) {
                 return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 24),
-                child: Text(l10n.dashboardHistoryEmpty,
+                    child: Text(l10n.dashboardHistoryEmpty,
                         style: TextStyle(
                             color: ext.textMuted,
                             fontSize: 12,
@@ -679,7 +679,7 @@ class _CreditsBar extends StatelessWidget {
               Icon(Icons.account_balance_wallet_outlined,
                   size: 16, color: ext.textMuted),
               const SizedBox(width: 8),
-                Text(l10n.dashboardCreditsReserve,
+              Text(l10n.dashboardCreditsReserve,
                   style: TextStyle(
                       color: ext.textMuted,
                       fontSize: 12,
@@ -693,7 +693,7 @@ class _CreditsBar extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                     border:
                         Border.all(color: ext.primary.withValues(alpha: 0.3))),
-                  child: Text(user?.plan?.toUpperCase() ?? l10n.dashboardFreeTier,
+                child: Text(user?.plan?.toUpperCase() ?? l10n.dashboardFreeTier,
                     style: TextStyle(
                         color: ext.primary,
                         fontSize: 11,

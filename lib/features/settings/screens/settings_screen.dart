@@ -91,7 +91,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       final formData = FormData.fromMap({
         'avatar': MultipartFile.fromBytes(bytes, filename: file.name),
       });
-      final res = await ApiClient.instance.post('/hub/user/avatar', data: formData);
+      final res =
+          await ApiClient.instance.post('/hub/user/avatar', data: formData);
       if (!mounted) return;
 
       if (res.data['status'] == true) {
@@ -181,6 +182,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           return l10n.languageSystem;
       }
     }
+
     final hPadding = context.pageHorizontalPadding;
 
     if (user != null && !_nameHydrated) {
@@ -267,20 +269,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                   child: CircleAvatar(
                                     radius: 28,
                                     backgroundColor: ext.surfaceVariant,
-                                    child: (user.avatarUrl ?? '').trim().isNotEmpty
+                                    child: (user.avatarUrl ?? '')
+                                            .trim()
+                                            .isNotEmpty
                                         ? ClipOval(
                                             child: Image.network(
                                               user.avatarUrl!,
                                               width: 56,
                                               height: 56,
                                               fit: BoxFit.cover,
-                                              errorBuilder: (_, __, ___) => Text(
+                                              errorBuilder: (_, __, ___) =>
+                                                  Text(
                                                 user.email[0].toUpperCase(),
                                                 style: TextStyle(
                                                     color: ext.primary,
                                                     fontSize: 24,
                                                     fontWeight: FontWeight.bold,
-                                                    fontFamily: 'JetBrainsMono'),
+                                                    fontFamily:
+                                                        'JetBrainsMono'),
                                               ),
                                             ),
                                           )
@@ -349,19 +355,20 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             Align(
                               alignment: Alignment.centerLeft,
                               child: OutlinedButton.icon(
-                                onPressed: _avatarUploading ? null : _uploadAvatar,
+                                onPressed:
+                                    _avatarUploading ? null : _uploadAvatar,
                                 style: OutlinedButton.styleFrom(
                                   foregroundColor: ext.primary,
                                   side: BorderSide(
-                                      color: ext.primary.withValues(alpha: 0.5)),
+                                      color:
+                                          ext.primary.withValues(alpha: 0.5)),
                                 ),
                                 icon: _avatarUploading
                                     ? SizedBox(
                                         width: 14,
                                         height: 14,
                                         child: CircularProgressIndicator(
-                                            strokeWidth: 2,
-                                            color: ext.primary),
+                                            strokeWidth: 2, color: ext.primary),
                                       )
                                     : const Icon(Icons.photo_camera_outlined,
                                         size: 14),
@@ -610,10 +617,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                       value: 'en',
                                       child: Text(
                                           '> ${l10n.languageEnglish.toUpperCase()}')),
-                                    DropdownMenuItem(
+                                  DropdownMenuItem(
                                       value: 'id',
                                       child: Text(
-                                        '> ${l10n.languageIndonesian.toUpperCase()}')),
+                                          '> ${l10n.languageIndonesian.toUpperCase()}')),
                                 ],
                                 onChanged: (value) {
                                   if (value == null) return;
